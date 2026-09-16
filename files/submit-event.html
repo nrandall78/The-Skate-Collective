@@ -393,14 +393,6 @@
     if (style) document.getElementById('prev-style').textContent = style;
   }
 
-  // ── WHERE SUBMISSIONS GO → straight to your email ───────────────────
-  // Web3Forms emails you every submission. No account, no dashboard, no code:
-  //   1. Go to web3forms.com, type in your email, click "Create Access Key".
-  //   2. They email you a key. Paste it below in place of YOUR_ACCESS_KEY.
-  // That's it — every event submission lands in your inbox.
-  // (The key is safe to sit in public code — it only points mail to you.)
-  const WEB3FORMS_KEY = '99e7a699-bec0-490a-8b76-e37921a9cb6f';
-
   function showToast(msg, isError) {
     const t = document.createElement('div');
     t.className = 'toast' + (isError ? ' toast-error' : '');
@@ -421,60 +413,31 @@
       return;
     }
 
-    // Build the ready-to-paste line for index.html's EVENTS list.
-    let _day = '', _month = '';
-    const _dv = document.getElementById('event-date').value;
-    if (_dv) { const _d = new Date(_dv + 'T00:00:00'); _day = String(_d.getDate()).padStart(2, '0'); _month = _d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); }
-    let _loc = document.getElementById('city').value || '';
-    const _st = document.getElementById('state').value; if (_st) _loc += ', ' + _st;
-    const _co = document.getElementById('country').value; if (_co) _loc += ' · ' + _co;
-    const _safeName = name.replace(/"/g, "'");
-    const _safeLoc = _loc.replace(/"/g, "'");
-    const addLine = '{ day: "' + _day + '", month: "' + _month + '", name: "' + _safeName + '", loc: "' + _safeLoc + '", types: ' + JSON.stringify(selectedTypes) + ', free: ' + isFree + ' },';
+    let loc = document.getElementById('city').value || '';
+    const st = document.getElementById('state').value; if (st) loc += ', ' + st;
+    const co = document.getElementById('country').value; if (co) loc += ' · ' + co;
 
     const payload = {
-      access_key: WEB3FORMS_KEY,
-      subject: 'New event submission — ' + name,
-      from_name: 'The Skate Collective',
-      add_to_site_paste_this: addLine,
       event_name: name,
       types: selectedTypes.join(', '),
-      style: document.getElementById('skate-style').value,
-      description: document.getElementById('event-desc').value,
       start_date: document.getElementById('event-date').value,
-      end_date: document.getElementById('event-end-date').value,
-      start_time: document.getElementById('event-time').value,
-      end_time: document.getElementById('event-end-time').value,
-      venue: document.getElementById('venue').value,
-      address: document.getElementById('address').value,
-      city: document.getElementById('city').value,
-      state: document.getElementById('state').value,
-      country: document.getElementById('country').value,
-      entry: isFree ? 'Free' : 'Paid',
-      ticket_price: (!isFree && document.getElementById('ticket-price')) ? document.getElementById('ticket-price').value : '',
+      loc: loc,
+      description: document.getElementById('event-desc').value,
       organizer: document.getElementById('organizer-name').value,
-      email,
-      link: document.getElementById('event-link').value,
-      social: document.getElementById('social').value,
-      submitted: new Date().toISOString()
+      email: email,
+      link: document.getElementById('event-link').value
     };
-
-    // Not connected yet — tell the owner instead of faking a success screen.
-    if (WEB3FORMS_KEY === 'YOUR_ACCESS_KEY') {
-      showToast("Site owner: add your Web3Forms key so events reach your inbox.", true);
-      return;
-    }
 
     const btn = document.querySelector('#step3 .btn-next');
     if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
+      const res = await fetch('/.netlify/functions/add-event', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
       const data = await res.json();
-      if (!data.success) throw new Error(data.message || 'submit failed');
+      if (!data.success) throw new Error(data.error || 'submit failed');
     } catch (err) {
       if (btn) { btn.disabled = false; btn.textContent = 'Submit event →'; }
       showToast('Something went wrong sending your event. Please try again.', true);
