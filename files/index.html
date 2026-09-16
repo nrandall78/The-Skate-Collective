@@ -786,11 +786,23 @@
     }
     document.getElementById('emailInput').style.borderColor = '';
     try {
-      const existing = await window.storage.get('signups').catch(() => null);
-      const list = existing ? JSON.parse(existing.value) : [];
-      list.push({ email, type: currentTab, date: new Date().toISOString() });
-      await window.storage.set('signups', JSON.stringify(list));
-    } catch(e) {}
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key: '99e7a699-bec0-490a-8b76-e37921a9cb6f',
+          subject: 'New waitlist signup — ' + currentTab,
+          from_name: 'The Skate Collective',
+          signup_type: currentTab,
+          email: email
+        })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error('failed');
+    } catch (e) {
+      document.getElementById('emailInput').style.borderColor = 'rgba(255,92,26,0.6)';
+      return;
+    }
     document.querySelector('.waitlist-form').style.display = 'none';
     document.getElementById('successMsg').classList.add('show');
   }
