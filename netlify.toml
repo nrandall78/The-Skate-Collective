@@ -1,0 +1,9 @@
+# Tells Netlify where your site files are (the "files" folder) and where your
+# behind-the-scenes functions live. This file must sit at the TOP LEVEL of the
+# repo — not inside the files folder.
+
+[build]
+  publish = "files"
+
+[functions]
+  directory = "netlify/functions"
