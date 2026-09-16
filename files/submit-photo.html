@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Share Your Skating — The Skate Collective</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f0e8; --cream-dark: #ede5d8; --black: #111009;
+    --orange: #ff5c1a; --yellow: #f5c842; --teal: #00a88a;
+    --white: #ffffff; --muted: rgba(17,16,9,0.5); --border: rgba(17,16,9,0.1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--cream); color: var(--black); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 48px; background: rgba(245,240,232,0.95); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.08em; color: var(--black); text-decoration: none; }
+  .logo span { color: var(--orange); }
+  .nav-back { font-size: 0.82rem; color: var(--muted); text-decoration: none; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--orange); }
+
+  .page-hero { background: var(--black); padding: 60px 48px; text-align: center; position: relative; overflow: hidden; }
+  .page-hero::before { content: '📸'; position: absolute; font-size: 20rem; opacity: 0.03; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+  .page-hero-label { font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--orange); margin-bottom: 14px; position: relative; z-index: 1; }
+  .page-hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3rem, 7vw, 6rem); color: var(--cream); line-height: 0.95; margin-bottom: 16px; position: relative; z-index: 1; }
+  .page-hero-title span { color: var(--orange); }
+  .page-hero-sub { font-size: 0.95rem; color: rgba(245,240,232,0.5); max-width: 480px; margin: 0 auto; line-height: 1.7; position: relative; z-index: 1; }
+
+  .page-wrap { max-width: 900px; margin: 0 auto; padding: 60px 40px; display: grid; grid-template-columns: 1fr 320px; gap: 40px; align-items: start; }
+
+  .form-card { background: var(--white); border: 1px solid var(--border); padding: 40px; }
+
+  .step-bar { display: flex; gap: 6px; margin-bottom: 32px; }
+  .step-dot { height: 3px; flex: 1; border-radius: 2px; background: var(--border); transition: background 0.3s; }
+  .step-dot.done { background: var(--orange); }
+  .step-dot.active { background: rgba(255,92,26,0.35); }
+  .step-label { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; }
+
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .field input, .field textarea, .field select {
+    width: 100%; background: var(--cream); border: 1px solid var(--border);
+    color: var(--black); padding: 12px 14px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; font-weight: 300; outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color: rgba(255,92,26,0.5); background: var(--white); }
+  .field textarea { min-height: 88px; resize: vertical; }
+  .field input::placeholder, .field textarea::placeholder { color: rgba(17,16,9,0.25); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .link-hint { font-size: 0.75rem; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+  .link-hint strong { color: var(--black); }
+
+  .photo-type-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .photo-type-opt { padding: 12px; border: 1px solid var(--border); cursor: pointer; font-size: 0.8rem; color: var(--muted); transition: all 0.2s; text-align: center; background: var(--cream); }
+  .photo-type-opt:hover { border-color: rgba(255,92,26,0.3); color: var(--black); }
+  .photo-type-opt.selected { border-color: var(--orange); background: rgba(255,92,26,0.04); color: var(--orange); }
+  .photo-type-icon { font-size: 1.4rem; margin-bottom: 6px; display: block; }
+
+  .consent-box { display: flex; gap: 12px; align-items: flex-start; padding: 16px; background: var(--cream); border: 1px solid var(--border); margin-top: 8px; cursor: pointer; }
+  .consent-box input[type=checkbox] { margin-top: 3px; accent-color: var(--orange); flex-shrink: 0; width: 16px; height: 16px; }
+  .consent-text { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+  .consent-text strong { color: var(--black); }
+
+  .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .btn-next { background: var(--orange); color: var(--white); border: none; padding: 12px 28px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .btn-next:hover { background: var(--black); }
+  .btn-back { background: transparent; color: var(--muted); border: none; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; padding: 12px 0; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Sidebar */
+  .sidebar { display: flex; flex-direction: column; gap: 16px; }
+  .info-card { background: var(--white); border: 1px solid var(--border); padding: 24px; }
+  .info-card-title { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .info-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+  .info-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .info-icon { font-size: 1rem; flex-shrink: 0; }
+  .info-text { color: var(--muted); line-height: 1.5; }
+  .info-text strong { color: var(--black); display: block; margin-bottom: 2px; }
+
+  .how-to-card { background: var(--black); padding: 24px; }
+  .how-to-title { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(245,240,232,0.3); margin-bottom: 16px; }
+  .how-to-step { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(245,240,232,0.06); font-size: 0.82rem; align-items: flex-start; }
+  .how-to-step:last-child { border-bottom: none; }
+  .how-to-num { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--orange); line-height: 1; flex-shrink: 0; width: 20px; }
+  .how-to-text { color: rgba(245,240,232,0.5); line-height: 1.5; }
+  .how-to-text strong { color: var(--cream); display: block; margin-bottom: 2px; }
+
+  /* Success */
+  .success-wrap { text-align: center; padding: 48px 20px; }
+  .success-circle { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,92,26,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.8rem; }
+  .success-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--orange); margin-bottom: 12px; }
+  .success-sub { font-size: 0.9rem; color: var(--muted); line-height: 1.7; margin-bottom: 24px; max-width: 360px; margin-left: auto; margin-right: auto; }
+  .success-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn-outline { background: transparent; color: var(--black); padding: 12px 24px; font-size: 0.82rem; border: 2px solid var(--black); cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+  .btn-outline:hover { background: var(--black); color: var(--white); }
+
+  @media (max-width: 768px) {
+    nav { padding: 18px 24px; }
+    .page-hero { padding: 48px 24px; }
+    .page-wrap { grid-template-columns: 1fr; padding: 40px 24px; }
+    .sidebar { display: none; }
+    .field-row, .photo-type-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">The Skate <span>Collective</span></a>
+  <a href="index.html" class="nav-back">← Back to home</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-label">Community gallery</div>
+  <h1 class="page-hero-title">SHARE YOUR<br><span>SKATING.</span></h1>
+  <p class="page-hero-sub">Got a great skating photo or video? Whether you're the skater, the photographer, or the videographer — submit your work and get featured in The Skate Collective gallery, seen by skaters worldwide.</p>
+</div>
+
+<!-- Callout bar -->
+<div style="background:var(--orange); padding:18px 48px; display:flex; justify-content:center; gap:48px; flex-wrap:wrap;">
+  <div style="display:flex; align-items:center; gap:10px; color:var(--white); font-size:0.82rem; letter-spacing:0.06em;">
+    <span style="font-size:1.2rem;">🛼</span> <strong>Skaters</strong> — Share your moments
+  </div>
+  <div style="display:flex; align-items:center; gap:10px; color:var(--white); font-size:0.82rem; letter-spacing:0.06em;">
+    <span style="font-size:1.2rem;">📸</span> <strong>Photographers</strong> — Get your work seen
+  </div>
+  <div style="display:flex; align-items:center; gap:10px; color:var(--white); font-size:0.82rem; letter-spacing:0.06em;">
+    <span style="font-size:1.2rem;">🎥</span> <strong>Videographers</strong> — Share your footage
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="form-card">
+    <div class="step-bar">
+      <div class="step-dot active" id="s1"></div>
+      <div class="step-dot" id="s2"></div>
+      <div class="step-dot" id="s3"></div>
+    </div>
+
+    <!-- Step 1 — About you -->
+    <div class="tab-panel active" id="step1">
+      <div class="step-label">Step 1 of 3 — About you</div>
+      <div class="field">
+        <label>I am a... *</label>
+        <div class="photo-type-grid">
+          <div class="photo-type-opt" onclick="selectPhotoType(this, 'Skater')"><span class="photo-type-icon">🛼</span>Skater</div>
+          <div class="photo-type-opt" onclick="selectPhotoType(this, 'Photographer')"><span class="photo-type-icon">📸</span>Photographer</div>
+          <div class="photo-type-opt" onclick="selectPhotoType(this, 'Videographer')"><span class="photo-type-icon">🎥</span>Videographer</div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Your name *</label>
+          <input type="text" id="skater-name" placeholder="First name or skate name">
+        </div>
+        <div class="field">
+          <label>Instagram handle</label>
+          <input type="text" id="instagram" placeholder="@yourhandle">
+        </div>
+      </div>
+      <div class="field">
+        <label>Email address *</label>
+        <input type="email" id="email" placeholder="your@email.com">
+        <div class="link-hint">We'll email you if your photo gets featured in the gallery.</div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Your city</label>
+          <input type="text" id="skater-city" placeholder="e.g. Dallas">
+        </div>
+        <div class="field">
+          <label>Your country</label>
+          <input type="text" id="skater-country" placeholder="e.g. USA">
+        </div>
+      </div>
+      <div class="field">
+        <label>Your skating style</label>
+        <select id="skater-style">
+          <option value="">Select your style</option>
+          <option>Rhythm Skating</option>
+          <option>Jam Skating</option>
+          <option>Roller Derby</option>
+          <option>Speed Skating</option>
+          <option>Artistic Skating</option>
+          <option>Freestyle Slalom</option>
+          <option>Dance Skating</option>
+          <option>Park / Outdoor</option>
+          <option>Just for fun</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <span></span>
+        <button class="btn-next" onclick="goStep(2)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 2 — The photo/video -->
+    <div class="tab-panel" id="step2">
+      <div class="step-label">Step 2 of 3 — Your content</div>
+      <div class="field">
+        <label>What are you submitting? *</label>
+        <div class="photo-type-grid">
+          <div class="photo-type-opt" onclick="selectPhotoType(this, 'Photo')">
+            <span class="photo-type-icon">📸</span>Photo
+          </div>
+          <div class="photo-type-opt" onclick="selectPhotoType(this, 'Video clip')">
+            <span class="photo-type-icon">🎥</span>Video clip
+            <div style="font-size:0.6rem; color:var(--orange); margin-top:4px; letter-spacing:0.06em;">LINK ONLY</div>
+          </div>
+          <div class="photo-type-opt" onclick="selectPhotoType(this, 'Both')">
+            <span class="photo-type-icon">✨</span>Both
+          </div>
+        </div>
+        <div style="background:rgba(255,92,26,0.05); border:1px solid rgba(255,92,26,0.15); padding:12px 14px; margin-top:10px; font-size:0.78rem; color:var(--muted); line-height:1.6; display:flex; gap:10px; align-items:flex-start;">
+          <span style="font-size:1rem; flex-shrink:0;">🔜</span>
+          <div><strong style="color:var(--black);">Direct video uploads coming soon.</strong> For now submit your video as a link from TikTok, Instagram, YouTube, or Google Drive. We'll embed it in the gallery with full credit to you.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Link to your photo or video *</label>
+        <input type="url" id="media-link" placeholder="https://...">
+        <div style="margin-top:10px; display:flex; flex-direction:column; gap:8px;">
+          <div style="font-size:0.72rem; color:var(--muted); font-weight:500; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:2px;">How to get your link:</div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:0.78rem; color:var(--muted);">
+            <span style="font-size:1rem;">📱</span>
+            <div><strong style="color:var(--black);">TikTok or Instagram</strong> — Go to your post → tap ··· → Copy link</div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:0.78rem; color:var(--muted);">
+            <span style="font-size:1rem;">▶️</span>
+            <div><strong style="color:var(--black);">YouTube</strong> — Go to your video → Share → Copy link (unlisted is fine)</div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:0.78rem; color:var(--muted);">
+            <span style="font-size:1rem;">📁</span>
+            <div><strong style="color:var(--black);">Google Drive or Dropbox</strong> — Right click → Share → Anyone with link → Copy</div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:0.78rem; color:var(--muted);">
+            <span style="font-size:1rem;">🖼️</span>
+            <div><strong style="color:var(--black);">Google Photos</strong> — Open photo → Share → Create link → Copy</div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Where was this taken?</label>
+        <input type="text" id="photo-location" placeholder="e.g. Venice Beach, CA or Local rink in Atlanta">
+      </div>
+      <div class="field">
+        <label>Tell us about this moment</label>
+        <textarea id="photo-caption" placeholder="What's happening in this photo? What makes it special to you?"></textarea>
+      </div>
+      <div class="field">
+        <label>Who else is in this photo? (optional)</label>
+        <input type="text" id="photo-others" placeholder="Tag their Instagram handles e.g. @skater1 @skater2">
+        <div class="link-hint">We'll tag them too if they're featured.</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-back" onclick="goStep(1)">← Back</button>
+        <button class="btn-next" onclick="goStep(3)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 — Consent & submit -->
+    <div class="tab-panel" id="step3">
+      <div class="step-label">Step 3 of 3 — Final step</div>
+      <div class="field">
+        <label>How did you hear about The Skate Collective?</label>
+        <select>
+          <option>Instagram</option>
+          <option>TikTok</option>
+          <option>A friend</option>
+          <option>Skating event</option>
+          <option>Google search</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Anything else you want to say?</label>
+        <textarea placeholder="Shoutouts, questions, anything at all..."></textarea>
+      </div>
+      <div class="field">
+        <label>Permissions *</label>
+        <div class="consent-box" onclick="toggleConsent()">
+          <input type="checkbox" id="consent">
+          <div class="consent-text">I confirm this photo/video is mine or I have permission to share it. I give <strong>The Skate Collective</strong> permission to feature it in the gallery and share it on social media with credit to me.</div>
+        </div>
+      </div>
+      <div style="background:rgba(255,92,26,0.04); border:1px solid rgba(255,92,26,0.15); padding:16px; font-size:0.82rem; color:var(--muted); line-height:1.7; margin-top:8px;">
+        🛼 We review every submission and feature the best ones in the gallery. You'll get an email if yours is selected. We always credit the skater — your name and Instagram will be shown with your photo.
+      </div>
+      <div class="btn-row">
+        <button class="btn-back" onclick="goStep(2)">← Back</button>
+        <button class="btn-next" onclick="submitPhoto()">Submit →</button>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="tab-panel" id="step-done">
+      <div class="success-wrap">
+        <div class="success-circle">📸</div>
+        <div class="success-title">Submitted!</div>
+        <div class="success-sub">Thanks for sharing your skating moment with The Skate Collective. We'll review it and reach out if it gets featured in the gallery. Keep rolling! 🛼</div>
+        <div class="success-actions">
+          <a href="index.html" class="btn-outline">Back to home</a>
+          <button class="btn-next" onclick="resetForm()">Submit another</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="how-to-card">
+      <div class="how-to-title">How to get your link</div>
+      <div class="how-to-step">
+        <div class="how-to-num">1</div>
+        <div class="how-to-text"><strong>Google Photos</strong>Open your photo → Share → Create link → Copy</div>
+      </div>
+      <div class="how-to-step">
+        <div class="how-to-num">2</div>
+        <div class="how-to-text"><strong>Google Drive</strong>Right click photo → Share → Anyone with link → Copy link</div>
+      </div>
+      <div class="how-to-step">
+        <div class="how-to-num">3</div>
+        <div class="how-to-text"><strong>Instagram</strong>Go to your post → tap ··· → Copy link</div>
+      </div>
+      <div class="how-to-step">
+        <div class="how-to-num">4</div>
+        <div class="how-to-text"><strong>TikTok / YouTube</strong>Go to your video → Share → Copy link</div>
+      </div>
+      <div class="how-to-step">
+        <div class="how-to-num">5</div>
+        <div class="how-to-text"><strong>Dropbox</strong>Right click file → Share → Copy link</div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Who can submit</div>
+      <div class="info-item">
+        <div class="info-icon">🛼</div>
+        <div class="info-text"><strong>Skaters</strong>Share your own skating moments — tricks, sessions, events, anything on wheels.</div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">📸</div>
+        <div class="info-text"><strong>Photographers</strong>Got skating shots? Get your work in front of the skating world. Always credited.</div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">🎥</div>
+        <div class="info-text"><strong>Videographers</strong>Skate clips, event footage, edits — share your video work with the community.</div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">🏆</div>
+        <div class="info-text"><strong>Always credited</strong>Your name, handle, and role go with everything we feature. Always.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let selectedPhotoType = '';
+
+  function goStep(n) {
+    [1,2,3].forEach(i => {
+      document.getElementById('step'+i).classList.toggle('active', i===n);
+      const dot = document.getElementById('s'+i);
+      dot.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    });
+  }
+
+  function selectPhotoType(el, type) {
+    selectedPhotoType = type;
+    document.querySelectorAll('.photo-type-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function toggleConsent() {
+    const cb = document.getElementById('consent');
+    cb.checked = !cb.checked;
+  }
+
+  async function submitPhoto() {
+    const name = document.getElementById('skater-name').value;
+    const email = document.getElementById('email').value;
+    const link = document.getElementById('media-link').value;
+    const consent = document.getElementById('consent').checked;
+
+    if (!name) { alert('Please add your name'); goStep(1); return; }
+    if (!email || !email.includes('@')) { alert('Please add a valid email'); goStep(1); return; }
+    if (!link) { alert('Please add a link to your photo or video'); goStep(2); return; }
+    if (!consent) { 
+      document.querySelector('.consent-box').style.borderColor = 'rgba(255,92,26,0.5)';
+      alert('Please confirm you have permission to share this content'); 
+      return; 
+    }
+
+    const submission = {
+      name,
+      email,
+      instagram: document.getElementById('instagram').value,
+      city: document.getElementById('skater-city').value,
+      country: document.getElementById('skater-country').value,
+      style: document.getElementById('skater-style').value,
+      type: selectedPhotoType,
+      link,
+      location: document.getElementById('photo-location').value,
+      caption: document.getElementById('photo-caption').value,
+      others: document.getElementById('photo-others').value,
+      submitted: new Date().toISOString()
+    };
+
+    try {
+      const existing = await window.storage.get('photo-submissions').catch(() => null);
+      const list = existing ? JSON.parse(existing.value) : [];
+      list.push(submission);
+      await window.storage.set('photo-submissions', JSON.stringify(list));
+    } catch(e) {}
+
+    [1,2,3].forEach(i => document.getElementById('step'+i).classList.remove('active'));
+    document.getElementById('step-done').classList.add('active');
+    document.querySelectorAll('.step-dot').forEach(d => d.className = 'step-dot done');
+  }
+
+  function resetForm() {
+    document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+    document.querySelectorAll('.photo-type-opt').forEach(o => o.classList.remove('selected'));
+    document.getElementById('consent').checked = false;
+    selectedPhotoType = '';
+    document.getElementById('step-done').classList.remove('active');
+    goStep(1);
+  }
+</script>
+</body>
+</html>

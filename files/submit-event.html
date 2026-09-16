@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit an Event — The Skate Collective</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f0e8; --cream-dark: #ede5d8; --black: #111009;
+    --orange: #ff5c1a; --yellow: #f5c842; --teal: #00a88a;
+    --white: #ffffff; --muted: rgba(17,16,9,0.5); --border: rgba(17,16,9,0.1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--cream); color: var(--black); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 48px; background: rgba(245,240,232,0.95); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.08em; color: var(--black); text-decoration: none; }
+  .logo span { color: var(--orange); }
+  .nav-back { font-size: 0.82rem; color: var(--muted); text-decoration: none; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--orange); }
+
+  .page-hero { background: var(--black); padding: 60px 48px; text-align: center; }
+  .page-hero-label { font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--orange); margin-bottom: 14px; }
+  .page-hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3rem, 7vw, 6rem); color: var(--cream); line-height: 0.95; margin-bottom: 16px; }
+  .page-hero-sub { font-size: 0.95rem; color: rgba(245,240,232,0.5); max-width: 480px; margin: 0 auto; line-height: 1.7; }
+
+  .page-wrap { max-width: 900px; margin: 0 auto; padding: 60px 40px; display: grid; grid-template-columns: 1fr 340px; gap: 40px; align-items: start; }
+
+  .form-card { background: var(--white); border: 1px solid var(--border); padding: 40px; }
+  .form-title { font-size: 1rem; font-weight: 500; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--border); color: var(--black); }
+
+  .step-bar { display: flex; gap: 6px; margin-bottom: 32px; }
+  .step-dot { height: 3px; flex: 1; border-radius: 2px; background: var(--border); transition: background 0.3s; }
+  .step-dot.done { background: var(--orange); }
+  .step-dot.active { background: rgba(255,92,26,0.35); }
+
+  .step-label { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; }
+
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .field input, .field textarea, .field select {
+    width: 100%; background: var(--cream); border: 1px solid var(--border);
+    color: var(--black); padding: 12px 14px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; font-weight: 300; outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color: rgba(255,92,26,0.5); background: var(--white); }
+  .field textarea { min-height: 100px; resize: vertical; }
+  .field select option { background: var(--white); }
+  .field input::placeholder, .field textarea::placeholder { color: rgba(17,16,9,0.25); }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .type-opt { padding: 12px 14px; border: 1px solid var(--border); cursor: pointer; font-size: 0.82rem; color: var(--muted); transition: all 0.2s; display: flex; align-items: center; justify-content: flex-start; gap: 10px; background: var(--cream); min-height: 48px; line-height: 1.3; user-select: none; -webkit-tap-highlight-color: transparent; }
+  .type-opt:hover { border-color: rgba(255,92,26,0.3); color: var(--black); }
+  .type-opt.selected { border-color: var(--orange); background: rgba(255,92,26,0.04); color: var(--orange); }
+  .type-opt input { accent-color: var(--orange); flex-shrink: 0; width: 16px; height: 16px; margin: 0; }
+  .type-hint { text-transform: none; letter-spacing: 0; color: var(--muted); font-weight: 300; }
+
+  .free-toggle { display: flex; margin-top: 8px; }
+  .free-opt { flex: 1; padding: 10px; text-align: center; font-size: 0.82rem; border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; color: var(--muted); background: var(--cream); }
+  .free-opt:first-child { border-right: none; }
+  .free-opt.active { background: rgba(255,92,26,0.06); border-color: rgba(255,92,26,0.3); color: var(--orange); }
+
+  .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .btn-next { background: var(--orange); color: var(--white); border: none; padding: 12px 28px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .btn-next:hover { background: var(--black); }
+  .btn-back { background: transparent; color: var(--muted); border: none; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; padding: 12px 0; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Sidebar */
+  .sidebar { display: flex; flex-direction: column; gap: 16px; }
+  .info-card { background: var(--white); border: 1px solid var(--border); padding: 24px; }
+  .info-card-title { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .info-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+  .info-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .info-icon { font-size: 1rem; flex-shrink: 0; }
+  .info-text { color: var(--muted); line-height: 1.5; }
+  .info-text strong { color: var(--black); display: block; margin-bottom: 2px; }
+  .preview-card { background: var(--black); padding: 24px; }
+  .preview-card-title { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(245,240,232,0.3); margin-bottom: 16px; }
+  .prev-date-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: var(--yellow); line-height: 1; }
+  .prev-date-mo { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange); margin-bottom: 12px; }
+  .prev-name { font-size: 0.9rem; font-weight: 500; color: var(--cream); margin-bottom: 5px; min-height: 20px; }
+  .prev-loc { font-size: 0.78rem; color: rgba(245,240,232,0.4); margin-bottom: 10px; min-height: 18px; }
+  .prev-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+  .prev-tag { font-size: 0.6rem; padding: 3px 8px; border: 1px solid rgba(245,240,232,0.15); color: rgba(245,240,232,0.4); letter-spacing: 0.06em; text-transform: uppercase; }
+
+  /* Success */
+  .success-wrap { text-align: center; padding: 48px 20px; }
+  .success-circle { width: 64px; height: 64px; border-radius: 50%; background: rgba(0,168,138,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.8rem; }
+  .success-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--teal); margin-bottom: 12px; }
+  .success-sub { font-size: 0.9rem; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+  .success-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn-outline { background: transparent; color: var(--black); padding: 12px 24px; font-size: 0.82rem; border: 2px solid var(--black); cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+  .btn-outline:hover { background: var(--black); color: var(--white); }
+
+  .toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px); background: var(--black); color: var(--cream); padding: 14px 22px; font-size: 0.88rem; max-width: 90vw; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.25); opacity: 0; transition: opacity 0.25s, transform 0.25s; z-index: 200; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-error { background: #b3341f; color: #fff; }
+
+  @media (max-width: 768px) {
+    nav { padding: 18px 24px; }
+    .page-hero { padding: 48px 24px; }
+    .page-wrap { grid-template-columns: 1fr; padding: 40px 24px; }
+    .sidebar { display: none; }
+    .field-row { grid-template-columns: 1fr; }
+    .type-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">The Skate <span>Collective</span></a>
+  <a href="index.html" class="nav-back">← Back to home</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-label">Free to list</div>
+  <h1 class="page-hero-title">ADD YOUR<br>EVENT.</h1>
+  <p class="page-hero-sub">List your skating event and reach skaters worldwide. Competitions, jams, meetups, boot camps — all welcome. Always free.</p>
+</div>
+
+<div class="page-wrap">
+  <!-- Form -->
+  <div class="form-card">
+    <div class="step-bar">
+      <div class="step-dot active" id="s1"></div>
+      <div class="step-dot" id="s2"></div>
+      <div class="step-dot" id="s3"></div>
+    </div>
+
+    <!-- Step 1 — Event basics -->
+    <div class="tab-panel active" id="step1">
+      <div class="step-label">Step 1 of 3 — Event details</div>
+      <div class="field">
+        <label>Event name *</label>
+        <input type="text" id="event-name" placeholder="e.g. ATL Summer Rhythm Jam" oninput="syncPreview()">
+      </div>
+      <div class="field">
+        <label>Event type * <span class="type-hint">— select all that apply</span></label>
+        <div class="type-grid">
+          <div class="type-opt" onclick="toggleType(this, 'Competition')"><input type="checkbox"> 🏆 Competition</div>
+          <div class="type-opt" onclick="toggleType(this, 'Jam / Skate Night')"><input type="checkbox"> 🛼 Jam / Skate Night</div>
+          <div class="type-opt" onclick="toggleType(this, 'Boot Camp')"><input type="checkbox"> 💪 Boot Camp</div>
+          <div class="type-opt" onclick="toggleType(this, 'Festival')"><input type="checkbox"> 🎉 Festival</div>
+          <div class="type-opt" onclick="toggleType(this, 'Meetup')"><input type="checkbox"> 👥 Meetup</div>
+          <div class="type-opt" onclick="toggleType(this, 'Workshop')"><input type="checkbox"> 🎓 Workshop</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Skating styles featured</label>
+        <select id="skate-style" oninput="syncPreview()">
+          <option value="">Select primary style</option>
+          <option>All styles welcome</option>
+          <option>Rhythm Skating</option>
+          <option>Jam Skating</option>
+          <option>Roller Derby</option>
+          <option>Speed Skating</option>
+          <option>Artistic Skating</option>
+          <option>Freestyle Slalom</option>
+          <option>Dance Skating</option>
+          <option>Park / Outdoor</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Short description</label>
+        <textarea id="event-desc" placeholder="Tell skaters what to expect. Who is it for? What's special about this event?"></textarea>
+      </div>
+      <div class="btn-row">
+        <span></span>
+        <button class="btn-next" onclick="goStep(2)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 2 — Location & Date -->
+    <div class="tab-panel" id="step2">
+      <div class="step-label">Step 2 of 3 — When & where</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Start date *</label>
+          <input type="date" id="event-date" oninput="syncPreview()">
+        </div>
+        <div class="field">
+          <label>End date (if multi-day)</label>
+          <input type="date" id="event-end-date">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Start time</label>
+          <input type="time" id="event-time">
+        </div>
+        <div class="field">
+          <label>End time</label>
+          <input type="time" id="event-end-time">
+        </div>
+      </div>
+      <div class="field">
+        <label>Venue name</label>
+        <input type="text" id="venue" placeholder="e.g. Cascade Family Skating Center">
+      </div>
+      <div class="field">
+        <label>Street address</label>
+        <input type="text" id="address" placeholder="123 Main St">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>City *</label>
+          <input type="text" id="city" placeholder="Atlanta" oninput="syncPreview()">
+        </div>
+        <div class="field">
+          <label>State / Region</label>
+          <input type="text" id="state" placeholder="GA" oninput="syncPreview()">
+        </div>
+      </div>
+      <div class="field">
+        <label>Country *</label>
+        <select id="country" oninput="syncPreview()">
+          <option value="">Select country</option>
+          <option>USA</option>
+          <option>UK</option>
+          <option>Canada</option>
+          <option>France</option>
+          <option>Germany</option>
+          <option>Brazil</option>
+          <option>Australia</option>
+          <option>Japan</option>
+          <option>South Africa</option>
+          <option>Nigeria</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Is this event free?</label>
+        <div class="free-toggle">
+          <div class="free-opt active" onclick="setFree(this, true)">Free entry</div>
+          <div class="free-opt" onclick="setFree(this, false)">Paid entry</div>
+        </div>
+      </div>
+      <div class="field" id="price-field" style="display:none">
+        <label>Ticket price (USD)</label>
+        <input type="number" id="ticket-price" placeholder="e.g. 25" min="1">
+      </div>
+      <div class="btn-row">
+        <button class="btn-back" onclick="goStep(1)">← Back</button>
+        <button class="btn-next" onclick="goStep(3)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 — Contact & confirm -->
+    <div class="tab-panel" id="step3">
+      <div class="step-label">Step 3 of 3 — Your details</div>
+      <div class="field">
+        <label>Your name *</label>
+        <input type="text" id="organizer-name" placeholder="Who's organizing this event?">
+      </div>
+      <div class="field">
+        <label>Email address *</label>
+        <input type="email" id="organizer-email" placeholder="your@email.com">
+      </div>
+      <div class="field">
+        <label>Event website or registration link (optional)</label>
+        <input type="url" id="event-link" placeholder="https://...">
+      </div>
+      <div class="field">
+        <label>Instagram or social handle (optional)</label>
+        <input type="text" id="social" placeholder="@youreventhandle">
+      </div>
+      <div class="field">
+        <label>Expected attendance</label>
+        <select>
+          <option>Under 50</option>
+          <option>50–100</option>
+          <option>100–500</option>
+          <option>500+</option>
+          <option>Not sure yet</option>
+        </select>
+      </div>
+      <div style="background:rgba(0,168,138,0.06); border:1px solid rgba(0,168,138,0.2); padding:16px; font-size:0.82rem; color:var(--muted); line-height:1.7; margin-top:8px;">
+        ✅ Listing your event is <strong style="color:var(--black)">completely free</strong>. We'll review your submission and get it live within 24 hours. You'll receive a confirmation email once it's posted.
+      </div>
+      <div class="btn-row">
+        <button class="btn-back" onclick="goStep(2)">← Back</button>
+        <button class="btn-next" onclick="submitEvent()">Submit event →</button>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="tab-panel" id="step-done">
+      <div class="success-wrap">
+        <div class="success-circle">🛼</div>
+        <div class="success-title">Event submitted!</div>
+        <div class="success-sub">Thanks for adding your event to The Skate Collective. We'll review it and get it live within 24 hours. Skaters worldwide will be able to find it.<br><br>Share the word and we'll see you on the rink! 🙌</div>
+        <div class="success-actions">
+          <a href="index.html" class="btn-outline">Back to home</a>
+          <button class="btn-next" onclick="resetForm()">Add another event</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="preview-card">
+      <div class="preview-card-title">Event preview</div>
+      <div class="prev-date-num" id="prev-day">—</div>
+      <div class="prev-date-mo" id="prev-month">Month Year</div>
+      <div class="prev-name" id="prev-name">Event name</div>
+      <div class="prev-loc" id="prev-loc">📍 City, Country</div>
+      <div class="prev-tags">
+        <div class="prev-tag" id="prev-type">Type</div>
+        <div class="prev-tag" id="prev-style">Style</div>
+        <div class="prev-tag" id="prev-free">Free</div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">What to expect</div>
+      <div class="info-item">
+        <div class="info-icon">⚡</div>
+        <div class="info-text"><strong>Live within 24 hours</strong>We review every submission and get it posted fast.</div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">🌍</div>
+        <div class="info-text"><strong>Worldwide reach</strong>Skaters from 40+ countries browse The Skate Collective for events.</div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">🆓</div>
+        <div class="info-text"><strong>Always free to list</strong>No fees, no catches. We want every skating event to be found.</div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">📧</div>
+        <div class="info-text"><strong>Confirmation email</strong>You'll hear from us once your event is live.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let selectedTypes = [];
+  let isFree = true;
+
+  function goStep(n) {
+    [1,2,3].forEach(i => {
+      document.getElementById('step'+i).classList.toggle('active', i===n);
+      const dot = document.getElementById('s'+i);
+      dot.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    });
+  }
+
+  function toggleType(el, type) {
+    const i = selectedTypes.indexOf(type);
+    if (i === -1) { selectedTypes.push(type); el.classList.add('selected'); }
+    else { selectedTypes.splice(i, 1); el.classList.remove('selected'); }
+    el.querySelector('input').checked = selectedTypes.includes(type);
+    document.getElementById('prev-type').textContent = selectedTypes.length ? selectedTypes.join(' · ') : 'Type';
+  }
+
+  function setFree(el, free) {
+    isFree = free;
+    document.querySelectorAll('.free-opt').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('price-field').style.display = free ? 'none' : 'block';
+    document.getElementById('prev-free').textContent = free ? 'Free entry' : 'Paid entry';
+  }
+
+  function syncPreview() {
+    const name = document.getElementById('event-name').value.trim();
+    const city = document.getElementById('city') ? document.getElementById('city').value.trim() : '';
+    const country = document.getElementById('country') ? document.getElementById('country').value : '';
+    const style = document.getElementById('skate-style') ? document.getElementById('skate-style').value : '';
+    const dateVal = document.getElementById('event-date') ? document.getElementById('event-date').value : '';
+
+    document.getElementById('prev-name').textContent = name || 'Event name';
+    document.getElementById('prev-name').style.color = name ? 'var(--cream)' : 'rgba(245,240,232,0.25)';
+
+    let locText = '';
+    if (city) locText += city;
+    if (country) locText += (locText ? ', ' : '') + country;
+    document.getElementById('prev-loc').textContent = locText ? '📍 ' + locText : '📍 City, Country';
+
+    if (dateVal) {
+      const d = new Date(dateVal + 'T00:00:00');
+      document.getElementById('prev-day').textContent = d.getDate();
+      document.getElementById('prev-month').textContent = d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase();
+    }
+
+    if (style) document.getElementById('prev-style').textContent = style;
+  }
+
+  // ── WHERE SUBMISSIONS GO → straight to your email ───────────────────
+  // Web3Forms emails you every submission. No account, no dashboard, no code:
+  //   1. Go to web3forms.com, type in your email, click "Create Access Key".
+  //   2. They email you a key. Paste it below in place of YOUR_ACCESS_KEY.
+  // That's it — every event submission lands in your inbox.
+  // (The key is safe to sit in public code — it only points mail to you.)
+  const WEB3FORMS_KEY = '99e7a699-bec0-490a-8b76-e37921a9cb6f';
+
+  function showToast(msg, isError) {
+    const t = document.createElement('div');
+    t.className = 'toast' + (isError ? ' toast-error' : '');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 4200);
+  }
+
+  async function submitEvent() {
+    const name = document.getElementById('event-name').value;
+    const email = document.getElementById('organizer-email').value;
+    if (!name) { showToast('Please add an event name', true); goStep(1); return; }
+    if (selectedTypes.length === 0) { showToast('Please choose at least one event type', true); goStep(1); return; }
+    if (!email || !email.includes('@')) {
+      document.getElementById('organizer-email').style.borderColor = 'rgba(255,92,26,0.6)';
+      showToast('Please add a valid email address', true);
+      return;
+    }
+
+    // Build the ready-to-paste line for index.html's EVENTS list.
+    let _day = '', _month = '';
+    const _dv = document.getElementById('event-date').value;
+    if (_dv) { const _d = new Date(_dv + 'T00:00:00'); _day = String(_d.getDate()).padStart(2, '0'); _month = _d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); }
+    let _loc = document.getElementById('city').value || '';
+    const _st = document.getElementById('state').value; if (_st) _loc += ', ' + _st;
+    const _co = document.getElementById('country').value; if (_co) _loc += ' · ' + _co;
+    const _safeName = name.replace(/"/g, "'");
+    const _safeLoc = _loc.replace(/"/g, "'");
+    const addLine = '{ day: "' + _day + '", month: "' + _month + '", name: "' + _safeName + '", loc: "' + _safeLoc + '", types: ' + JSON.stringify(selectedTypes) + ', free: ' + isFree + ' },';
+
+    const payload = {
+      access_key: WEB3FORMS_KEY,
+      subject: 'New event submission — ' + name,
+      from_name: 'The Skate Collective',
+      add_to_site_paste_this: addLine,
+      event_name: name,
+      types: selectedTypes.join(', '),
+      style: document.getElementById('skate-style').value,
+      description: document.getElementById('event-desc').value,
+      start_date: document.getElementById('event-date').value,
+      end_date: document.getElementById('event-end-date').value,
+      start_time: document.getElementById('event-time').value,
+      end_time: document.getElementById('event-end-time').value,
+      venue: document.getElementById('venue').value,
+      address: document.getElementById('address').value,
+      city: document.getElementById('city').value,
+      state: document.getElementById('state').value,
+      country: document.getElementById('country').value,
+      entry: isFree ? 'Free' : 'Paid',
+      ticket_price: (!isFree && document.getElementById('ticket-price')) ? document.getElementById('ticket-price').value : '',
+      organizer: document.getElementById('organizer-name').value,
+      email,
+      link: document.getElementById('event-link').value,
+      social: document.getElementById('social').value,
+      submitted: new Date().toISOString()
+    };
+
+    // Not connected yet — tell the owner instead of faking a success screen.
+    if (WEB3FORMS_KEY === 'YOUR_ACCESS_KEY') {
+      showToast("Site owner: add your Web3Forms key so events reach your inbox.", true);
+      return;
+    }
+
+    const btn = document.querySelector('#step3 .btn-next');
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'submit failed');
+    } catch (err) {
+      if (btn) { btn.disabled = false; btn.textContent = 'Submit event →'; }
+      showToast('Something went wrong sending your event. Please try again.', true);
+      return;
+    }
+
+    [1,2,3].forEach(i => document.getElementById('step'+i).classList.remove('active'));
+    document.getElementById('step-done').classList.add('active');
+    document.querySelectorAll('.step-dot').forEach(d => d.className = 'step-dot done');
+  }
+
+  function resetForm() {
+    document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+    document.querySelectorAll('.type-opt').forEach(o => o.classList.remove('selected'));
+    document.querySelectorAll('.type-opt input').forEach(c => c.checked = false);
+    document.getElementById('prev-type').textContent = 'Type';
+    selectedTypes = [];
+    isFree = true;
+    document.querySelectorAll('.free-opt').forEach((o,i) => o.classList.toggle('active', i===0));
+    document.getElementById('price-field').style.display = 'none';
+    document.getElementById('step-done').classList.remove('active');
+    goStep(1);
+    syncPreview();
+  }
+</script>
+</body>
+</html>

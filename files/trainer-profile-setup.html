@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trainer Profile Setup — The Skate Collective</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a; --white: #f5f0e8; --orange: #ff5c1a;
+    --yellow: #f5c842; --teal: #00c9a7; --dark: #111208;
+    --card: #161616; --border: rgba(245,240,232,0.08); --muted: rgba(245,240,232,0.45);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 48px; border-bottom: 1px solid var(--border); background: var(--dark); }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.08em; }
+  .logo span { color: var(--orange); }
+
+  .page-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1000px; margin: 60px auto; padding: 0 40px; align-items: start; }
+
+  .form-card { background: var(--card); border: 1px solid var(--border); padding: 36px; }
+  .preview-card { background: var(--card); border: 1px solid var(--border); padding: 36px; position: sticky; top: 40px; }
+
+  .step-bar { display: flex; gap: 6px; margin-bottom: 28px; }
+  .step-dot { height: 3px; flex: 1; border-radius: 2px; background: var(--border); transition: background 0.3s; }
+  .step-dot.done { background: var(--orange); }
+  .step-dot.active { background: rgba(255,92,26,0.4); }
+
+  .step-label { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; }
+
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .field input, .field textarea, .field select {
+    width: 100%; background: #1a1a1a; border: 1px solid var(--border);
+    color: var(--white); padding: 12px 14px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem; font-weight: 300; outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color: rgba(255,92,26,0.4); }
+  .field textarea { min-height: 88px; resize: vertical; }
+  .field select option { background: #1a1a1a; }
+  .field input::placeholder, .field textarea::placeholder { color: rgba(245,240,232,0.2); }
+
+  .offerings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .offering-opt { display: flex; align-items: center; gap: 8px; padding: 12px; border: 1px solid var(--border); cursor: pointer; font-size: 0.82rem; color: var(--muted); transition: all 0.2s; }
+  .offering-opt.selected { border-color: rgba(255,92,26,0.4); background: rgba(255,92,26,0.06); color: var(--white); }
+  .offering-opt input[type=checkbox] { width: auto; accent-color: var(--orange); }
+
+  .access-toggle { display: flex; margin-top: 8px; }
+  .access-opt { flex: 1; padding: 10px; text-align: center; font-size: 0.8rem; border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; color: var(--muted); }
+  .access-opt:first-child { border-right: none; }
+  .access-opt.active { background: rgba(255,92,26,0.1); border-color: rgba(255,92,26,0.3); color: var(--orange); }
+
+  .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .btn-next { background: var(--orange); color: var(--black); border: none; padding: 12px 28px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .btn-next:hover { background: var(--yellow); }
+  .btn-back { background: transparent; color: var(--muted); border: none; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; padding: 12px 0; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Preview */
+  .preview-label { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+  .prev-avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--orange); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 500; color: var(--black); margin-bottom: 14px; }
+  .prev-name { font-size: 1.1rem; font-weight: 500; margin-bottom: 3px; }
+  .prev-style { font-size: 0.75rem; color: var(--teal); margin-bottom: 3px; letter-spacing: 0.04em; }
+  .prev-loc { font-size: 0.75rem; color: var(--muted); margin-bottom: 12px; }
+  .prev-bio { font-size: 0.85rem; color: var(--muted); line-height: 1.7; margin-bottom: 16px; min-height: 48px; font-style: italic; }
+  .prev-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .prev-pill { font-size: 0.65rem; padding: 4px 10px; border: 1px solid var(--border); color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+  .prev-pill.active { border-color: rgba(255,92,26,0.4); color: var(--orange); }
+  .prev-price-row { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid var(--border); }
+  .prev-price { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--white); }
+  .prev-price span { font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 300; color: var(--muted); }
+  .prev-sub-btn { background: var(--orange); color: var(--black); border: none; padding: 8px 18px; font-size: 0.78rem; font-weight: 500; }
+
+  /* Success */
+  .success-wrap { text-align: center; padding: 40px 20px; }
+  .success-icon { width: 56px; height: 56px; border-radius: 50%; background: rgba(0,201,167,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.5rem; }
+  .success-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; margin-bottom: 10px; color: var(--teal); }
+  .success-sub { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+
+  @media (max-width: 768px) {
+    .page-wrap { grid-template-columns: 1fr; padding: 0 20px; }
+    nav { padding: 18px 24px; }
+    .preview-card { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">The Skate <span>Collective</span></div>
+  <div style="font-size:0.8rem; color:var(--muted);">Trainer onboarding</div>
+</nav>
+
+<div class="page-wrap">
+  <!-- Form -->
+  <div class="form-card">
+    <div class="step-bar">
+      <div class="step-dot active" id="s1"></div>
+      <div class="step-dot" id="s2"></div>
+      <div class="step-dot" id="s3"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="tab-panel active" id="step1">
+      <div class="step-label">Step 1 of 3 — Basic info</div>
+      <div class="field">
+        <label>Your name</label>
+        <input type="text" id="name" placeholder="e.g. Coach Renée" oninput="syncPreview()">
+      </div>
+      <div class="field">
+        <label>Skating style / specialty</label>
+        <input type="text" id="style" placeholder="e.g. Rhythm & Jam Skating" oninput="syncPreview()">
+      </div>
+      <div class="field">
+        <label>Location</label>
+        <input type="text" id="location" placeholder="e.g. Atlanta, GA" oninput="syncPreview()">
+      </div>
+      <div class="field">
+        <label>Short bio</label>
+        <textarea id="bio" placeholder="Tell fans about you and your coaching style..." oninput="syncPreview()"></textarea>
+      </div>
+      <div class="btn-row">
+        <span></span>
+        <button class="btn-next" onclick="goStep(2)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="tab-panel" id="step2">
+      <div class="step-label">Step 2 of 3 — What you offer</div>
+      <div class="field">
+        <label>What will you offer subscribers?</label>
+        <div class="offerings-grid">
+          <div class="offering-opt" id="opt-videos" onclick="toggleOffering('videos', this)">
+            <input type="checkbox" id="cb-videos"> 🎥 Videos & courses
+          </div>
+          <div class="offering-opt" id="opt-live" onclick="toggleOffering('live', this)">
+            <input type="checkbox" id="cb-live"> 📡 Live sessions
+          </div>
+          <div class="offering-opt" id="opt-1on1" onclick="toggleOffering('1on1', this)">
+            <input type="checkbox" id="cb-1on1"> 🤝 1-on-1 bookings
+          </div>
+          <div class="offering-opt" id="opt-guides" onclick="toggleOffering('guides', this)">
+            <input type="checkbox" id="cb-guides"> 📋 Guides & PDFs
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Monthly subscription price</label>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="color:var(--muted); font-size:1rem;">$</span>
+          <input type="number" id="price" placeholder="15" min="1" max="999" style="width:120px" oninput="syncPreview()">
+          <span style="font-size:0.82rem; color:var(--muted);">/month</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Skill levels you coach</label>
+        <div class="access-toggle">
+          <div class="access-opt active" onclick="setMulti(this)">Beginner</div>
+          <div class="access-opt" onclick="setMulti(this)">Intermediate</div>
+          <div class="access-opt" onclick="setMulti(this)">Advanced</div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-back" onclick="goStep(1)">← Back</button>
+        <button class="btn-next" onclick="goStep(3)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="tab-panel" id="step3">
+      <div class="step-label">Step 3 of 3 — Confirm & submit</div>
+      <div class="field">
+        <label>Email address</label>
+        <input type="email" id="email" placeholder="your@email.com">
+      </div>
+      <div class="field">
+        <label>Instagram handle (optional)</label>
+        <input type="text" id="instagram" placeholder="@yourhandle">
+      </div>
+      <div class="field">
+        <label>TikTok handle (optional)</label>
+        <input type="text" id="tiktok" placeholder="@yourhandle">
+      </div>
+      <div style="background:rgba(0,201,167,0.05); border:1px solid rgba(0,201,167,0.15); padding:16px; font-size:0.82rem; color:var(--muted); line-height:1.7; margin-top:8px;">
+        🎉 You're joining as an early trainer. <strong style="color:var(--teal)">Zero platform fees for your first 3 months.</strong> We'll be in touch within 24 hours to get you fully set up.
+      </div>
+      <div class="btn-row">
+        <button class="btn-back" onclick="goStep(2)">← Back</button>
+        <button class="btn-next" onclick="submitProfile()">Submit profile →</button>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="tab-panel" id="step-done">
+      <div class="success-wrap">
+        <div class="success-icon">✓</div>
+        <div class="success-title">You're in!</div>
+        <div class="success-sub">Welcome to The Skate Collective. We'll review your profile and reach out within 24 hours to get you fully live on the platform.<br><br>Built by skaters, for skaters. 🛼</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div class="preview-card">
+    <div class="preview-label">Live preview — how fans will see you</div>
+    <div class="prev-avatar" id="prev-avatar">?</div>
+    <div class="prev-name" id="prev-name" style="color:rgba(245,240,232,0.3)">Your name</div>
+    <div class="prev-style" id="prev-style">Skating style</div>
+    <div class="prev-loc" id="prev-loc">📍 Location</div>
+    <div class="prev-bio" id="prev-bio">Your bio will appear here...</div>
+    <div class="prev-pills">
+      <div class="prev-pill" id="pill-videos">Videos</div>
+      <div class="prev-pill" id="pill-live">Live sessions</div>
+      <div class="prev-pill" id="pill-1on1">1-on-1</div>
+      <div class="prev-pill" id="pill-guides">Guides</div>
+    </div>
+    <div class="prev-price-row">
+      <div class="prev-price" id="prev-price">$— <span>/month</span></div>
+      <button class="prev-sub-btn">Subscribe</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const offerings = { videos: false, live: false, '1on1': false, guides: false };
+
+  function goStep(n) {
+    [1,2,3].forEach(i => {
+      document.getElementById('step' + i).classList.toggle('active', i === n);
+      const dot = document.getElementById('s' + i);
+      dot.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    });
+  }
+
+  function toggleOffering(key, el) {
+    offerings[key] = !offerings[key];
+    el.classList.toggle('selected', offerings[key]);
+    el.querySelector('input').checked = offerings[key];
+    syncPreview();
+  }
+
+  function setMulti(el) {
+    el.classList.toggle('active');
+  }
+
+  function syncPreview() {
+    const name = document.getElementById('name').value.trim();
+    const style = document.getElementById('style').value.trim();
+    const loc = document.getElementById('location').value.trim();
+    const bio = document.getElementById('bio').value.trim();
+    const price = document.getElementById('price').value;
+
+    const initials = name ? name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2) : '?';
+    document.getElementById('prev-avatar').textContent = initials;
+
+    const nameEl = document.getElementById('prev-name');
+    nameEl.textContent = name || 'Your name';
+    nameEl.style.color = name ? 'var(--white)' : 'rgba(245,240,232,0.3)';
+
+    document.getElementById('prev-style').textContent = style || 'Skating style';
+    document.getElementById('prev-loc').textContent = loc ? '📍 ' + loc : '📍 Location';
+
+    const bioEl = document.getElementById('prev-bio');
+    bioEl.textContent = bio || 'Your bio will appear here...';
+    bioEl.style.fontStyle = bio ? 'normal' : 'italic';
+    bioEl.style.color = bio ? 'rgba(245,240,232,0.65)' : 'var(--muted)';
+
+    ['videos','live','1on1','guides'].forEach(k => {
+      document.getElementById('pill-' + k).className = 'prev-pill' + (offerings[k] ? ' active' : '');
+    });
+
+    const priceEl = document.getElementById('prev-price');
+    priceEl.innerHTML = price ? '$' + Math.round(price) + ' <span>/month</span>' : '$— <span>/month</span>';
+  }
+
+  async function submitProfile() {
+    const email = document.getElementById('email').value;
+    if (!email || !email.includes('@')) {
+      document.getElementById('email').style.borderColor = 'rgba(255,92,26,0.6)';
+      return;
+    }
+    const profile = {
+      name: document.getElementById('name').value,
+      style: document.getElementById('style').value,
+      location: document.getElementById('location').value,
+      bio: document.getElementById('bio').value,
+      price: document.getElementById('price').value,
+      offerings,
+      email,
+      instagram: document.getElementById('instagram').value,
+      tiktok: document.getElementById('tiktok').value,
+      date: new Date().toISOString()
+    };
+    try {
+      const existing = await window.storage.get('trainer-profiles').catch(() => null);
+      const list = existing ? JSON.parse(existing.value) : [];
+      list.push(profile);
+      await window.storage.set('trainer-profiles', JSON.stringify(list));
+    } catch(e) {}
+    [1,2,3].forEach(i => document.getElementById('step'+i).classList.remove('active'));
+    document.getElementById('step-done').classList.add('active');
+    document.querySelectorAll('.step-dot').forEach(d => d.className = 'step-dot done');
+  }
+</script>
+</body>
+</html>

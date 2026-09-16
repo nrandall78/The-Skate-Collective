@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trainer Dashboard — The Skate Collective</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f0e8;
+    --orange: #ff5c1a;
+    --yellow: #f5c842;
+    --teal: #00c9a7;
+    --dark: #111208;
+    --card: #161616;
+    --border: rgba(245,240,232,0.08);
+    --muted: rgba(245,240,232,0.45);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; display: flex; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: var(--dark);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    padding: 28px 0;
+    position: fixed; top: 0; left: 0; bottom: 0;
+  }
+  .sidebar-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem; letter-spacing: 0.08em;
+    padding: 0 24px 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .sidebar-logo span { color: var(--orange); }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 24px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 2px solid transparent;
+    text-decoration: none;
+  }
+  .nav-item:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+  .nav-item.active { color: var(--white); border-left-color: var(--orange); background: rgba(255,92,26,0.06); }
+  .nav-icon { font-size: 16px; width: 18px; text-align: center; }
+  .nav-section {
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(245,240,232,0.2); padding: 16px 24px 8px;
+  }
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: 20px 24px 0;
+    border-top: 1px solid var(--border);
+  }
+  .trainer-mini { display: flex; align-items: center; gap: 10px; }
+  .trainer-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--orange);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 500; color: var(--black); flex-shrink: 0;
+  }
+  .trainer-mini-name { font-size: 0.85rem; font-weight: 500; }
+  .trainer-mini-tag { font-size: 0.7rem; color: var(--teal); }
+
+  /* Main */
+  .main { margin-left: 220px; flex: 1; padding: 36px 40px; }
+
+  /* Header */
+  .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+  .greeting { font-size: 1.4rem; font-weight: 500; margin-bottom: 4px; }
+  .greeting span { color: var(--orange); }
+  .greeting-sub { font-size: 0.85rem; color: var(--muted); }
+  .header-actions { display: flex; gap: 10px; }
+  .btn-primary {
+    background: var(--orange); color: var(--black);
+    padding: 10px 22px; font-size: 0.82rem; font-weight: 500;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    border: none; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary:hover { background: var(--yellow); }
+  .btn-outline {
+    background: transparent; color: var(--white);
+    padding: 10px 22px; font-size: 0.82rem;
+    border: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-outline:hover { border-color: rgba(245,240,232,0.3); }
+
+  /* Metrics */
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+  .metric {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 20px; position: relative; overflow: hidden;
+  }
+  .metric::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--orange); transform: scaleX(0); transition: transform 0.3s;
+  }
+  .metric:hover::before { transform: scaleX(1); }
+  .metric-label { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .metric-value { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: var(--white); line-height: 1; margin-bottom: 4px; }
+  .metric-change { font-size: 0.75rem; color: var(--teal); }
+  .metric-change.neutral { color: var(--muted); }
+
+  /* Grid layouts */
+  .grid-main { display: grid; grid-template-columns: 1fr 340px; gap: 20px; margin-bottom: 20px; }
+  .grid-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  /* Cards */
+  .card {
+    background: var(--card); border: 1px solid var(--border); padding: 24px;
+  }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  }
+  .card-title { font-size: 0.85rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+  .card-link { font-size: 0.78rem; color: var(--orange); cursor: pointer; }
+
+  /* Sessions */
+  .session-item { display: flex; gap: 16px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--border); }
+  .session-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .session-date-box {
+    background: rgba(255,92,26,0.1); border: 1px solid rgba(255,92,26,0.2);
+    padding: 8px 12px; text-align: center; min-width: 52px; flex-shrink: 0;
+  }
+  .session-day { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--orange); line-height: 1; }
+  .session-month { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  .session-info { flex: 1; }
+  .session-name { font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; }
+  .session-meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 8px; }
+  .session-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag { font-size: 0.65rem; padding: 3px 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .tag-live { background: rgba(255,92,26,0.12); color: var(--orange); }
+  .tag-1on1 { background: rgba(0,201,167,0.12); color: var(--teal); }
+  .tag-spots { background: rgba(245,240,232,0.06); color: var(--muted); }
+  .session-actions { display: flex; flex-direction: column; gap: 6px; }
+  .btn-sm {
+    font-size: 0.72rem; padding: 6px 14px; border: none;
+    background: var(--orange); color: var(--black); cursor: pointer;
+    font-weight: 500; white-space: nowrap; transition: background 0.2s;
+  }
+  .btn-sm:hover { background: var(--yellow); }
+  .btn-sm-outline {
+    font-size: 0.72rem; padding: 6px 14px;
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--border); cursor: pointer;
+    white-space: nowrap; transition: all 0.2s;
+  }
+  .btn-sm-outline:hover { border-color: rgba(245,240,232,0.3); color: var(--white); }
+
+  /* Bookings */
+  .booking-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .booking-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .fan-info { display: flex; align-items: center; gap: 12px; }
+  .fan-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(245,240,232,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 500; flex-shrink: 0;
+  }
+  .fan-name { font-size: 0.88rem; font-weight: 500; margin-bottom: 2px; }
+  .fan-time { font-size: 0.75rem; color: var(--muted); }
+  .booking-btns { display: flex; gap: 6px; }
+  .btn-confirm { background: var(--teal); color: var(--black); border: none; padding: 6px 14px; font-size: 0.72rem; font-weight: 500; cursor: pointer; transition: opacity 0.2s; }
+  .btn-confirm:hover { opacity: 0.85; }
+  .btn-decline { background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 6px 14px; font-size: 0.72rem; cursor: pointer; }
+
+  /* Checklist */
+  .check-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .check-item:last-child { border-bottom: none; }
+  .check-box {
+    width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 0.7rem;
+  }
+  .check-done { background: rgba(0,201,167,0.15); color: var(--teal); }
+  .check-todo { border: 1px solid var(--border); }
+  .check-label { flex: 1; }
+  .check-label.done { color: var(--muted); text-decoration: line-through; }
+
+  /* Earnings */
+  .earnings-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .earnings-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .earnings-label { color: var(--muted); }
+  .earnings-val { font-weight: 500; }
+  .earnings-val.total { color: var(--orange); font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; }
+  .earnings-val.deduct { color: rgba(245,240,232,0.3); }
+
+  /* Quick actions */
+  .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .qa-btn {
+    background: rgba(245,240,232,0.03); border: 1px solid var(--border);
+    padding: 14px; cursor: pointer; text-align: left;
+    transition: all 0.2s; display: flex; align-items: center; gap: 10px;
+  }
+  .qa-btn:hover { background: rgba(255,92,26,0.06); border-color: rgba(255,92,26,0.2); }
+  .qa-icon { font-size: 16px; }
+  .qa-label { font-size: 0.8rem; color: var(--white); }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 24px 20px; }
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .grid-main, .grid-bottom { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">The Skate <span>Collective</span></div>
+  <div class="nav-section">Main</div>
+  <a class="nav-item active"><span class="nav-icon">🏠</span> Dashboard</a>
+  <a class="nav-item"><span class="nav-icon">📅</span> Sessions</a>
+  <a class="nav-item"><span class="nav-icon">🤝</span> Bookings</a>
+  <div class="nav-section">Content</div>
+  <a class="nav-item"><span class="nav-icon">📹</span> Videos</a>
+  <a class="nav-item"><span class="nav-icon">📋</span> Guides</a>
+  <a class="nav-item"><span class="nav-icon">👥</span> Subscribers</a>
+  <div class="nav-section">Money</div>
+  <a class="nav-item"><span class="nav-icon">💰</span> Earnings</a>
+  <a class="nav-item"><span class="nav-icon">💳</span> Payouts</a>
+  <div class="nav-section">Settings</div>
+  <a class="nav-item"><span class="nav-icon">👤</span> My Profile</a>
+  <a class="nav-item"><span class="nav-icon">⚙️</span> Settings</a>
+  <div class="sidebar-bottom">
+    <div class="trainer-mini">
+      <div class="trainer-avatar">CR</div>
+      <div>
+        <div class="trainer-mini-name">Coach Renée</div>
+        <div class="trainer-mini-tag">Rhythm & Jam</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Main content -->
+<main class="main">
+  <div class="page-header">
+    <div>
+      <div class="greeting">Good morning, <span>Coach Renée</span> 🛼</div>
+      <div class="greeting-sub">Wednesday, April 22 · Here's what's on your plate today</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-outline">+ Add content</button>
+      <button class="btn-primary">+ Schedule session</button>
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-label">Subscribers</div>
+      <div class="metric-value">248</div>
+      <div class="metric-change">+12 this week</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">This month</div>
+      <div class="metric-value">$2,108</div>
+      <div class="metric-change">+$340 vs last month</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Upcoming sessions</div>
+      <div class="metric-value">3</div>
+      <div class="metric-change neutral">next 7 days</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Pending bookings</div>
+      <div class="metric-value">4</div>
+      <div class="metric-change neutral">awaiting confirm</div>
+    </div>
+  </div>
+
+  <!-- Main grid -->
+  <div class="grid-main">
+    <!-- Sessions -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Upcoming sessions</div>
+        <div class="card-link">View all →</div>
+      </div>
+      <div class="session-item">
+        <div class="session-date-box">
+          <div class="session-day">23</div>
+          <div class="session-month">Apr</div>
+        </div>
+        <div class="session-info">
+          <div class="session-name">Rhythm Skating Fundamentals — Group Class</div>
+          <div class="session-meta">6:00 PM EST · 60 min · Zoom</div>
+          <div class="session-tags">
+            <span class="tag tag-live">Live session</span>
+            <span class="tag tag-spots">14 / 20 spots filled</span>
+          </div>
+        </div>
+        <div class="session-actions">
+          <button class="btn-sm">Start session</button>
+          <button class="btn-sm-outline">Edit</button>
+        </div>
+      </div>
+      <div class="session-item">
+        <div class="session-date-box">
+          <div class="session-day">25</div>
+          <div class="session-month">Apr</div>
+        </div>
+        <div class="session-info">
+          <div class="session-name">1-on-1 with Jordan M.</div>
+          <div class="session-meta">4:30 PM EST · 45 min · Private</div>
+          <div class="session-tags">
+            <span class="tag tag-1on1">1-on-1</span>
+          </div>
+        </div>
+        <div class="session-actions">
+          <button class="btn-sm-outline">Details</button>
+        </div>
+      </div>
+      <div class="session-item">
+        <div class="session-date-box">
+          <div class="session-day">28</div>
+          <div class="session-month">Apr</div>
+        </div>
+        <div class="session-info">
+          <div class="session-name">Advanced Footwork Masterclass</div>
+          <div class="session-meta">7:00 PM EST · 90 min · Zoom</div>
+          <div class="session-tags">
+            <span class="tag tag-live">Live session</span>
+            <span class="tag tag-spots">6 / 30 spots filled</span>
+          </div>
+        </div>
+        <div class="session-actions">
+          <button class="btn-sm-outline">Details</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column -->
+    <div style="display:flex; flex-direction:column; gap:20px;">
+      <!-- Quick actions -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Quick actions</div>
+        </div>
+        <div class="quick-grid">
+          <button class="qa-btn"><span class="qa-icon">📹</span><span class="qa-label">Upload video</span></button>
+          <button class="qa-btn"><span class="qa-icon">📅</span><span class="qa-label">Schedule session</span></button>
+          <button class="qa-btn"><span class="qa-icon">📋</span><span class="qa-label">Add guide</span></button>
+          <button class="qa-btn"><span class="qa-icon">👤</span><span class="qa-label">Edit profile</span></button>
+        </div>
+      </div>
+
+      <!-- Earnings -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">This month's earnings</div>
+          <div class="card-link">Full report →</div>
+        </div>
+        <div class="earnings-row">
+          <div class="earnings-label">Subscriptions</div>
+          <div class="earnings-val">$1,860</div>
+        </div>
+        <div class="earnings-row">
+          <div class="earnings-label">Live sessions</div>
+          <div class="earnings-val">$180</div>
+        </div>
+        <div class="earnings-row">
+          <div class="earnings-label">1-on-1 bookings</div>
+          <div class="earnings-val">$68</div>
+        </div>
+        <div class="earnings-row">
+          <div class="earnings-label">Platform fee (15%)</div>
+          <div class="earnings-val deduct">-$316</div>
+        </div>
+        <div class="earnings-row">
+          <div class="earnings-label" style="color:var(--white); font-weight:500;">Your payout</div>
+          <div class="earnings-val total">$1,792</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom grid -->
+  <div class="grid-bottom">
+    <!-- Pending bookings -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Pending 1-on-1 requests</div>
+        <div class="card-link">View all →</div>
+      </div>
+      <div class="booking-item" id="b1">
+        <div class="fan-info">
+          <div class="fan-avatar">TK</div>
+          <div>
+            <div class="fan-name">Taylor K.</div>
+            <div class="fan-time">Thu Apr 27 · 5:00 PM EST</div>
+          </div>
+        </div>
+        <div class="booking-btns">
+          <button class="btn-confirm" onclick="confirmBooking('b1', this)">Confirm</button>
+          <button class="btn-decline" onclick="declineBooking('b1', this)">Decline</button>
+        </div>
+      </div>
+      <div class="booking-item" id="b2">
+        <div class="fan-info">
+          <div class="fan-avatar">MS</div>
+          <div>
+            <div class="fan-name">Morgan S.</div>
+            <div class="fan-time">Fri Apr 28 · 3:00 PM EST</div>
+          </div>
+        </div>
+        <div class="booking-btns">
+          <button class="btn-confirm" onclick="confirmBooking('b2', this)">Confirm</button>
+          <button class="btn-decline" onclick="declineBooking('b2', this)">Decline</button>
+        </div>
+      </div>
+      <div class="booking-item" id="b3">
+        <div class="fan-info">
+          <div class="fan-avatar">JL</div>
+          <div>
+            <div class="fan-name">Jamie L.</div>
+            <div class="fan-time">Sat Apr 29 · 11:00 AM EST</div>
+          </div>
+        </div>
+        <div class="booking-btns">
+          <button class="btn-confirm" onclick="confirmBooking('b3', this)">Confirm</button>
+          <button class="btn-decline" onclick="declineBooking('b3', this)">Decline</button>
+        </div>
+      </div>
+      <div class="booking-item" id="b4">
+        <div class="fan-info">
+          <div class="fan-avatar">RC</div>
+          <div>
+            <div class="fan-name">Riley C.</div>
+            <div class="fan-time">Mon May 1 · 6:00 PM EST</div>
+          </div>
+        </div>
+        <div class="booking-btns">
+          <button class="btn-confirm" onclick="confirmBooking('b4', this)">Confirm</button>
+          <button class="btn-decline" onclick="declineBooking('b4', this)">Decline</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checklist -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Profile setup checklist</div>
+        <div class="card-link" id="progress-text">3 of 6 done</div>
+      </div>
+      <div class="check-item">
+        <div class="check-box check-done">✓</div>
+        <div class="check-label done">Create your profile</div>
+      </div>
+      <div class="check-item">
+        <div class="check-box check-done">✓</div>
+        <div class="check-label done">Set subscription price</div>
+      </div>
+      <div class="check-item">
+        <div class="check-box check-done">✓</div>
+        <div class="check-label done">Upload first video</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box check-todo"></div>
+        <div class="check-label">Schedule a live session</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box check-todo"></div>
+        <div class="check-label">Connect Stripe for payouts</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box check-todo"></div>
+        <div class="check-label">Share your profile link</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  function confirmBooking(id, btn) {
+    const item = document.getElementById(id);
+    btn.textContent = '✓ Confirmed';
+    btn.style.background = 'var(--teal)';
+    btn.nextElementSibling.style.display = 'none';
+    btn.disabled = true;
+    item.style.opacity = '0.5';
+  }
+
+  function declineBooking(id, btn) {
+    const item = document.getElementById(id);
+    btn.textContent = 'Declined';
+    btn.previousElementSibling.style.display = 'none';
+    btn.disabled = true;
+    item.style.opacity = '0.3';
+  }
+
+  let doneCount = 3;
+  function toggleCheck(item) {
+    const box = item.querySelector('.check-box');
+    const label = item.querySelector('.check-label');
+    const isDone = box.classList.contains('check-done');
+    if (isDone) {
+      box.classList.remove('check-done');
+      box.classList.add('check-todo');
+      box.textContent = '';
+      label.classList.remove('done');
+      doneCount--;
+    } else {
+      box.classList.remove('check-todo');
+      box.classList.add('check-done');
+      box.textContent = '✓';
+      label.classList.add('done');
+      doneCount++;
+    }
+    document.getElementById('progress-text').textContent = doneCount + ' of 6 done';
+  }
+</script>
+</body>
+</html>

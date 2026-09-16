@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Skate Collective — Every Skater. Every City. One Place.</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f0e8;
+    --cream-dark: #ede5d8;
+    --black: #111009;
+    --orange: #ff5c1a;
+    --yellow: #f5c842;
+    --teal: #00a88a;
+    --white: #ffffff;
+    --muted: rgba(17,16,9,0.5);
+    --border: rgba(17,16,9,0.1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--black); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; }
+
+  /* Nav */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 22px 48px; background: rgba(245,240,232,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.08em; color: var(--black); }
+  .logo span { color: var(--orange); }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { color: var(--black); text-decoration: none; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.5; transition: opacity 0.2s; }
+  .nav-links a:hover { opacity: 1; }
+  .back-to-top { position: fixed; bottom: 32px; right: 32px; width: 44px; height: 44px; background: var(--orange); color: var(--white); border: none; font-size: 1.2rem; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 200; transition: all 0.2s; box-shadow: 0 4px 20px rgba(255,92,26,0.3); }
+  .back-to-top:hover { background: var(--black); transform: translateY(-3px); }
+  .back-to-top.visible { display: flex; }
+  .nav-cta { background: var(--orange) !important; color: var(--white) !important; opacity: 1 !important; padding: 9px 22px; font-weight: 500 !important; transition: background 0.2s !important; }
+  .nav-cta:hover { background: var(--black) !important; }
+
+  /* Hero */
+  .hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding: 120px 48px 80px; gap: 60px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -100px; right: -100px; width: 600px; height: 600px; border-radius: 50%; background: rgba(255,92,26,0.07); pointer-events: none; }
+  .hero-content { position: relative; z-index: 1; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin-bottom: 24px; opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards; }
+  .hero-eyebrow::before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--orange); }
+  .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(4rem, 9vw, 8rem); line-height: 0.88; letter-spacing: 0.02em; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.8s ease 0.4s forwards; color: var(--black); }
+  .hero-title .t2 { color: var(--orange); }
+  .hero-title .t3 { -webkit-text-stroke: 2px var(--black); color: transparent; }
+  .hero-tagline { font-size: 0.88rem; color: var(--muted); margin-bottom: 20px; opacity: 0; animation: fadeUp 0.8s ease 0.55s forwards; letter-spacing: 0.06em; text-transform: uppercase; }
+  .hero-sub { font-size: 1rem; line-height: 1.8; color: rgba(17,16,9,0.65); max-width: 480px; margin-bottom: 44px; opacity: 0; animation: fadeUp 0.8s ease 0.65s forwards; }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.8s ease 0.8s forwards; }
+  .btn-primary { background: var(--orange); color: var(--white); padding: 14px 32px; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; border: none; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+  .btn-primary:hover { background: var(--black); transform: translateY(-2px); }
+  .btn-secondary { background: transparent; color: var(--black); padding: 14px 32px; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; border: 2px solid var(--black); cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+  .btn-secondary:hover { background: var(--black); color: var(--cream); transform: translateY(-2px); }
+  .hero-right { position: relative; z-index: 1; opacity: 0; animation: fadeLeft 0.8s ease 0.8s forwards; }
+  .hero-image-stack { position: relative; }
+  .hero-img-main { width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: right center; display: block; }
+  .hero-img-badge { position: absolute; bottom: -20px; left: -20px; background: var(--orange); color: var(--white); padding: 20px 24px; }
+  .hero-img-badge-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; line-height: 1; }
+  .hero-img-badge-label { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.8; }
+  .hero-img-dot { position: absolute; top: -16px; right: -16px; width: 80px; height: 80px; border-radius: 50%; background: var(--yellow); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.08em; text-align: center; color: var(--black); line-height: 1.2; }
+
+  /* Ticker */
+  .ticker-wrap { background: var(--black); padding: 14px 0; overflow: hidden; white-space: nowrap; }
+  .ticker { display: inline-block; animation: ticker 25s linear infinite; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.15em; color: var(--cream); }
+  .ticker span { margin: 0 32px; }
+  .t-dot { color: var(--orange); }
+
+  /* Sections */
+  section { padding: 100px 48px; }
+  .section-label { font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--orange); margin-bottom: 14px; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.8rem, 5.5vw, 5rem); line-height: 0.95; margin-bottom: 20px; color: var(--black); }
+  .section-body { font-size: 0.95rem; line-height: 1.8; color: var(--muted); max-width: 520px; }
+
+  /* What section */
+  .what-section { background: var(--white); }
+  .what-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 40px; }
+  .pillar { background: var(--cream); padding: 24px; border-bottom: 3px solid transparent; transition: all 0.3s; }
+  .pillar:hover { border-bottom-color: var(--orange); }
+  .pillar-icon { font-size: 1.6rem; margin-bottom: 12px; }
+  .pillar-title { font-size: 0.9rem; font-weight: 500; margin-bottom: 6px; color: var(--black); }
+  .pillar-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+  .what-visual { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .what-img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+  .what-img-tall { grid-row: span 2; aspect-ratio: auto; height: 100%; }
+
+  /* Gallery */
+  .gallery-section { background: var(--cream-dark); }
+  .gallery-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; flex-wrap: wrap; gap: 20px; }
+  .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: 280px 280px; gap: 8px; margin-bottom: 24px; }
+  .gallery-item { overflow: hidden; position: relative; }
+  .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
+  .gallery-item:hover img { transform: scale(1.05); }
+  .gallery-item.tall { grid-row: span 2; }
+  .gallery-item.wide { grid-column: span 2; }
+  .gallery-overlay { position: absolute; inset: 0; background: rgba(17,16,9,0); transition: background 0.3s; display: flex; align-items: flex-end; padding: 16px; }
+  .gallery-item:hover .gallery-overlay { background: rgba(17,16,9,0.35); }
+  .gallery-caption { color: var(--white); font-size: 0.78rem; letter-spacing: 0.08em; opacity: 0; transition: opacity 0.3s; }
+  .gallery-item:hover .gallery-caption { opacity: 1; }
+  .gallery-placeholder { background: var(--cream); border: 2px dashed var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; cursor: pointer; transition: all 0.2s; }
+  .gallery-placeholder:hover { border-color: var(--orange); background: rgba(255,92,26,0.03); }
+  .gallery-placeholder-icon { font-size: 2rem; margin-bottom: 8px; }
+  .gallery-placeholder-text { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+  .gallery-placeholder-text strong { color: var(--orange); }
+
+  /* Events */
+  .events-section { background: var(--black); }
+  .events-section .section-label { color: var(--orange); }
+  .events-section .section-title { color: var(--cream); }
+  .events-section .section-body { color: rgba(245,240,232,0.5); }
+  .events-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px; flex-wrap: wrap; gap: 20px; }
+  .events-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-bottom: 40px; }
+  .event-card { background: #1a1a16; padding: 28px; border-bottom: 2px solid transparent; transition: all 0.3s; }
+  .event-card:hover { background: #222219; border-bottom-color: var(--orange); }
+  .event-date-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; color: var(--yellow); line-height: 1; }
+  .event-date-mo { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--orange); margin-bottom: 14px; }
+  .event-name { font-size: 0.92rem; font-weight: 500; margin-bottom: 6px; color: var(--cream); line-height: 1.4; }
+  .event-loc { font-size: 0.78rem; color: rgba(245,240,232,0.45); margin-bottom: 12px; }
+  .event-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .etag { font-size: 0.62rem; padding: 3px 9px; border: 1px solid rgba(245,240,232,0.15); color: rgba(245,240,232,0.5); letter-spacing: 0.08em; text-transform: uppercase; }
+  .etag-comp { border-color: rgba(255,92,26,0.4); color: var(--orange); }
+  .etag-free { border-color: rgba(245,200,66,0.3); color: var(--yellow); }
+  .events-add { background: #1a1a16; border: 1px dashed rgba(245,240,232,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s; }
+  .events-add:hover { border-color: rgba(255,92,26,0.3); }
+  .events-add-icon { font-size: 1.8rem; margin-bottom: 10px; }
+  .events-add-text { font-size: 0.82rem; color: rgba(245,240,232,0.4); line-height: 1.6; }
+
+  /* Trainers */
+  .trainers-section { background: var(--cream); }
+  .trainers-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; margin-bottom: 48px; }
+  .trainers-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+  .trainer-card { background: var(--white); padding: 24px 20px; border-bottom: 3px solid transparent; transition: all 0.3s; }
+  .trainer-card:hover { border-bottom-color: var(--orange); }
+  .trainer-avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 500; color: var(--white); margin-bottom: 14px; }
+  .trainer-name { font-size: 0.9rem; font-weight: 500; margin-bottom: 3px; color: var(--black); }
+  .trainer-style { font-size: 0.72rem; color: var(--teal); margin-bottom: 3px; }
+  .trainer-loc { font-size: 0.72rem; color: var(--muted); margin-bottom: 12px; }
+  .trainer-offers { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px; }
+  .offer-tag { font-size: 0.6rem; padding: 3px 8px; border: 1px solid var(--border); color: var(--muted); }
+  .trainer-price { font-size: 0.82rem; color: var(--black); font-weight: 500; }
+  .trainer-price span { font-weight: 300; color: var(--muted); }
+
+  /* Community */
+  .community-section { background: var(--white); }
+  .community-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .comm-features { display: flex; flex-direction: column; gap: 0; margin-top: 40px; }
+  .comm-feat { display: flex; gap: 18px; padding: 20px 0; border-bottom: 1px solid var(--border); align-items: flex-start; transition: padding-left 0.2s; }
+  .comm-feat:last-child { border-bottom: none; }
+  .comm-feat:hover { padding-left: 8px; }
+  .comm-feat-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .comm-feat-title { font-size: 0.9rem; font-weight: 500; margin-bottom: 5px; color: var(--black); }
+  .comm-feat-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+  .comm-visual { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .comm-card { background: var(--cream); padding: 20px; }
+  .comm-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .comm-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 500; color: var(--white); flex-shrink: 0; }
+  .comm-name { font-size: 0.82rem; font-weight: 500; color: var(--black); }
+  .comm-loc { font-size: 0.68rem; color: var(--muted); }
+  .comm-text { font-size: 0.78rem; color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
+  .comm-img { height: 70px; background: var(--cream-dark); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 10px; }
+  .comm-likes { font-size: 0.68rem; color: var(--muted); }
+  .comm-likes span { color: var(--orange); }
+  .comm-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+  .comm-action { font-size: 0.72rem; color: var(--muted); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; user-select: none; }
+  .comm-action:hover { color: var(--orange); }
+  .comm-action.liked { color: var(--orange); }
+
+  /* Trainer CTA */
+  .trainer-cta { background: var(--orange); padding: 100px 48px; }
+  .trainer-cta-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .trainer-cta .section-label { color: rgba(255,255,255,0.6); }
+  .trainer-cta .section-title { color: var(--white); }
+  .trainer-cta .section-body { color: rgba(255,255,255,0.7); margin-bottom: 32px; }
+  .check-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px; }
+  .check-item { display: flex; align-items: center; gap: 12px; font-size: 0.88rem; color: rgba(255,255,255,0.85); }
+  .check-item::before { content: '✓'; color: var(--yellow); font-weight: 500; flex-shrink: 0; }
+  .btn-white { background: var(--white); color: var(--orange); padding: 14px 32px; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; border: none; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+  .btn-white:hover { background: var(--black); color: var(--white); }
+  .earnings-mock { background: rgba(0,0,0,0.15); padding: 28px; }
+  .earnings-mock-title { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 20px; }
+  .earn-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; }
+  .earn-row:last-child { border-bottom: none; }
+  .earn-label { color: rgba(255,255,255,0.6); }
+  .earn-val { color: var(--white); font-weight: 500; }
+  .earn-val.total { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--yellow); }
+  .earn-val.neg { color: rgba(255,255,255,0.3); }
+
+  /* Waitlist */
+  .waitlist-section { background: var(--black); padding: 100px 48px; text-align: center; position: relative; overflow: hidden; }
+  .waitlist-section::before { content: 'TSC'; position: absolute; font-family: 'Bebas Neue', sans-serif; font-size: 28vw; color: rgba(245,240,232,0.03); top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; }
+  .waitlist-section .section-label { color: var(--orange); }
+  .waitlist-section .section-title { color: var(--cream); font-size: clamp(3rem, 8vw, 7rem); }
+  .waitlist-tagline { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.25em; color: rgba(245,240,232,0.2); margin-bottom: 16px; position: relative; z-index: 1; }
+  .waitlist-sub { color: rgba(245,240,232,0.5); font-size: 0.95rem; max-width: 420px; margin: 0 auto 36px; position: relative; z-index: 1; line-height: 1.7; }
+  .waitlist-tabs { display: flex; justify-content: center; margin-bottom: 24px; position: relative; z-index: 1; }
+  .wtab { padding: 10px 28px; background: rgba(245,240,232,0.06); border: none; color: rgba(245,240,232,0.5); font-family: 'DM Sans', sans-serif; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .wtab.active { background: var(--orange); color: var(--white); }
+  .waitlist-form { display: flex; max-width: 460px; margin: 0 auto; position: relative; z-index: 1; }
+  .waitlist-input { flex: 1; padding: 15px 18px; background: rgba(245,240,232,0.08); border: 1px solid rgba(245,240,232,0.1); color: var(--cream); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; outline: none; transition: border-color 0.2s; }
+  .waitlist-input:focus { border-color: rgba(255,92,26,0.5); }
+  .waitlist-input::placeholder { color: rgba(245,240,232,0.3); }
+  .waitlist-btn { padding: 15px 24px; background: var(--orange); border: none; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+  .waitlist-btn:hover { background: var(--yellow); color: var(--black); }
+  .waitlist-note { margin-top: 14px; font-size: 0.72rem; color: rgba(245,240,232,0.25); position: relative; z-index: 1; }
+  .waitlist-success { display: none; font-size: 1rem; color: var(--teal); padding: 16px; margin-top: 16px; position: relative; z-index: 1; }
+  .waitlist-success.show { display: block; }
+
+  /* Footer */
+  footer { background: #0a0a08; padding: 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; border-top: 1px solid rgba(245,240,232,0.06); }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.08em; color: var(--cream); }
+  .footer-logo span { color: var(--orange); }
+  .footer-tagline { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,240,232,0.2); margin-top: 4px; }
+  .footer-copy { font-size: 0.72rem; color: rgba(245,240,232,0.2); }
+
+  /* Animations */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeLeft { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    nav { padding: 18px 24px; }
+    .nav-links { display: none; }
+    section { padding: 72px 24px; }
+    .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; }
+    .hero-right { display: none; }
+    .what-grid, .trainers-intro, .community-grid, .trainer-cta-inner, .founder-grid { grid-template-columns: 1fr; gap: 40px; }
+    .trainers-grid, .pillars { grid-template-columns: 1fr 1fr; }
+    .events-grid { grid-template-columns: 1fr; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    .gallery-item.tall, .gallery-item.wide { grid-row: auto; grid-column: auto; }
+    .comm-visual { grid-template-columns: 1fr; }
+    footer { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body id="top">
+
+<!-- Nav -->
+<nav>
+  <div class="logo">The Skate <span>Collective</span></div>
+  <ul class="nav-links">
+    <li><a href="#top">Home</a></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#community">Community</a></li>
+    <li><a href="#roadmap">What's Coming</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="submit-event.html" class="nav-cta">Add Event</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">Built by skaters, for skaters</div>
+    <h1 class="hero-title">
+      <div>Every</div>
+      <div class="t2">Skater.</div>
+      <div class="t3">One Place.</div>
+    </h1>
+    <p class="hero-tagline">Every skater. Every city. One place.</p>
+    <p class="hero-sub">Discover and share roller skating events happening worldwide. From jams and competitions to meetups and boot camps — every skate event in one place, for free.</p>
+    <div class="hero-actions">
+      <a href="submit-event.html" class="btn-primary">Add Your Event</a>
+      <a href="#events" class="btn-secondary">Browse events →</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-image-stack">
+      <img class="hero-img-main" src="https://cdn.pixabay.com/photo/2014/07/01/12/25/roller-skates-381216_1280.jpg" alt="Roller skater" onerror="this.style.background='#ede5d8'; this.style.minHeight='500px'; this.removeAttribute('src')">
+      <div class="hero-img-badge">
+        <div class="hero-img-badge-num">40+</div>
+        <div class="hero-img-badge-label">Countries</div>
+      </div>
+      <div class="hero-img-dot">Rise &<br>Roll</div>
+    </div>
+  </div>
+</section>
+
+<!-- Ticker -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>Rhythm Skating</span><span class="t-dot">●</span>
+    <span>Jam Skating</span><span class="t-dot">●</span>
+    <span>Roller Derby</span><span class="t-dot">●</span>
+    <span>Speed Skating</span><span class="t-dot">●</span>
+    <span>Artistic Skating</span><span class="t-dot">●</span>
+    <span>Freestyle Slalom</span><span class="t-dot">●</span>
+    <span>Dance Skating</span><span class="t-dot">●</span>
+    <span>Park Skating</span><span class="t-dot">●</span>
+    <span>Rhythm Skating</span><span class="t-dot">●</span>
+    <span>Jam Skating</span><span class="t-dot">●</span>
+    <span>Roller Derby</span><span class="t-dot">●</span>
+    <span>Speed Skating</span><span class="t-dot">●</span>
+    <span>Artistic Skating</span><span class="t-dot">●</span>
+    <span>Freestyle Slalom</span><span class="t-dot">●</span>
+    <span>Dance Skating</span><span class="t-dot">●</span>
+    <span>Park Skating</span><span class="t-dot">●</span>
+  </div>
+</div>
+
+<!-- What is TSC -->
+<section class="what-section" id="about">
+  <div class="what-grid">
+    <div class="reveal">
+      <div class="section-label">What is The Skate Collective</div>
+      <h2 class="section-title">MORE THAN<br>A PLATFORM.</h2>
+      <p class="section-body">This is where the culture lives. Whether you're just lacing up for the first time or you've been rolling for decades — there's a place here for you.</p>
+      <div class="pillars">
+        <div class="pillar">
+          <div class="pillar-icon">🛼</div>
+          <div class="pillar-title">Find Your Community</div>
+          <div class="pillar-desc">Connect with skaters worldwide. Find events near you and discover what's happening globally.</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">📅</div>
+          <div class="pillar-title">Discover Events</div>
+          <div class="pillar-desc">Jams, competitions, meetups — worldwide and local.</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">🎓</div>
+          <div class="pillar-title">Browse Events</div>
+          <div class="pillar-desc">Filter by city, style, skill level, and date. Find exactly what you're looking for.</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">🎥</div>
+          <div class="pillar-title">List Your Event</div>
+          <div class="pillar-desc">Submit your own event and reach skaters worldwide — completely free to list.</div>
+        </div>
+      </div>
+    </div>
+    <div class="what-visual reveal">
+      <img class="what-img what-img-tall" src="https://th.bing.com/th/id/R.d02f27827e8732ea494d14440de9f330?rik=cpc0pIDTYNPLww&pid=ImgRaw&r=0" alt="Skater" onerror="this.style.background='#ede5d8'; this.removeAttribute('src')">
+      <img class="what-img" src="https://njfamily-images.s3.amazonaws.com/wp-content/uploads/2019/02/iStock_000013329474_Large.jpg" alt="Skating" onerror="this.style.background='#e0d8cc'; this.removeAttribute('src')">
+      <img class="what-img" src="https://i.ytimg.com/vi/zR-snDKX_og/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGGUgYChSMA8=&rs=AOn4CLC8dLi1QaABd3zVEcXzpk7wIdCEjw" alt="Skate event" onerror="this.style.background='#d8d0c4'; this.removeAttribute('src')">
+    </div>
+  </div>
+</section>
+
+<!-- Gallery -->
+<section class="events-section" id="events">
+  <div class="events-header reveal">
+    <div>
+      <div class="section-label">Worldwide Events</div>
+      <h2 class="section-title">FIND YOUR<br>NEXT JAM.</h2>
+    </div>
+    <p class="section-body" style="margin-bottom:0">Competitions, jams, boot camps, meetups — every skating event in one place.</p>
+  </div>
+  <div class="events-grid reveal" id="events-grid">
+    <!-- Event cards are added automatically from the APPROVED EVENTS list in the script near the bottom of this file. -->
+    <div class="events-add reveal">
+      <div class="events-add-icon">🌍</div>
+      <div class="events-add-text">Hosting an event?<br>List it free on The Skate Collective.<br><br><a href='submit-event.html' style="color:var(--orange); text-decoration:none; font-weight:500">Add your event →</a></div>
+    </div>
+  </div>
+  <div style="text-align:center" class="reveal">
+    <a href="#waitlist" class="btn-primary">See all events →</a>
+  </div>
+</section>
+
+<!-- Trainers -->
+<section class="community-section" id="community">
+  <div class="community-grid">
+    <div class="reveal">
+      <div class="section-label">Community</div>
+      <h2 class="section-title">THE WORLD<br>ON WHEELS.</h2>
+      <p class="section-body">From Atlanta to Paris to São Paulo — skaters everywhere are rolling. The Skate Collective is where they all come to find out what's happening next.</p>
+      <div class="comm-features">
+        <div class="comm-feat">
+          <div class="comm-feat-icon">🎥</div>
+          <div><div class="comm-feat-title">Discover events near you</div><div class="comm-feat-desc">Search by city, skating style, or date and find your next skate experience.</div></div>
+        </div>
+        <div class="comm-feat">
+          <div class="comm-feat-icon">💬</div>
+          <div><div class="comm-feat-title">Share events</div><div class="comm-feat-desc">Post your event, spread the word, and watch your community show up.</div></div>
+        </div>
+        <div class="comm-feat">
+          <div class="comm-feat-icon">🌍</div>
+          <div><div class="comm-feat-title">Connect worldwide</div><div class="comm-feat-desc">Meet skaters from your city and from the other side of the world.</div></div>
+        </div>
+        <div class="comm-feat">
+          <div class="comm-feat-icon">📣</div>
+          <div><div class="comm-feat-title">Grow the culture</div><div class="comm-feat-desc">Every event listed helps skaters find each other and keeps the culture alive.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="comm-visual reveal">
+      <div class="comm-card">
+        <div class="comm-card-top">
+          <div class="comm-avatar" style="background:var(--orange)">NR</div>
+          <div><div class="comm-name">Nic R.</div><div class="comm-loc">Dallas, TX</div></div>
+        </div>
+        <div class="comm-img">🛼</div>
+        <div class="comm-text">First time doing backwards crossovers at speed — scared myself but kept going 😂 skating teaches you more about yourself than anything else.</div>
+        <div class="comm-actions">
+          <span class="comm-action" onclick="toggleLike(this, 94)"><span class="like-icon">❤️</span> <span class="like-count">94</span></span>
+          <span class="comm-action">🔥 22</span>
+          <span class="comm-action">💬 15</span>
+        </div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-card-top">
+          <div class="comm-avatar" style="background:var(--teal)">JM</div>
+          <div><div class="comm-name">Jordan M.</div><div class="comm-loc">Dallas, TX</div></div>
+        </div>
+        <div class="comm-text">Anyone skating the Chicago jam next month? Looking for people to roll with 👀 this is exactly why we needed a place like this.</div>
+        <div class="comm-actions">
+          <span class="comm-action" onclick="toggleLike(this, 38)"><span class="like-icon">❤️</span> <span class="like-count">38</span></span>
+          <span class="comm-action">💬 27 replies</span>
+        </div>
+      </div>
+      <div class="comm-card" style="grid-column: 1 / -1;">
+        <div class="comm-card-top">
+          <div class="comm-avatar" style="background:var(--yellow); color:var(--black)">SA</div>
+          <div><div class="comm-name">SkateATL</div><div class="comm-loc">Atlanta, GA</div></div>
+        </div>
+        <div class="comm-img">📅</div>
+        <div class="comm-text">🎉 ATL Rhythm Boot Camp is BACK — July 5th. Tag 3 skaters who need to be there! The culture is alive and rolling 🛼</div>
+        <div class="comm-actions">
+          <span class="comm-action" onclick="toggleLike(this, 201)"><span class="like-icon">❤️</span> <span class="like-count">201</span></span>
+          <span class="comm-action">💬 48</span>
+          <span class="comm-action">🔗 112 shares</span>
+        </div>
+      </div>
+      <div class="comm-card" style="grid-column: 1 / -1; background:rgba(255,92,26,0.04); border:1.5px dashed rgba(255,92,26,0.2); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:32px; cursor:pointer;" onclick="window.location.href='#waitlist'">
+        <div style="font-size:2rem; margin-bottom:10px;">✍️</div>
+        <div style="font-size:0.9rem; font-weight:500; color:var(--black); margin-bottom:6px;">Be the first to post</div>
+        <div style="font-size:0.8rem; color:var(--muted); line-height:1.6; margin-bottom:14px;">Community posts, event shares, skating clips and more — coming in Phase 2. Sign up to be first in.</div>
+        <div style="background:var(--orange); color:var(--white); padding:8px 20px; font-size:0.78rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase;">Join the waitlist →</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- For Trainers -->
+<section class="gallery-section" id="gallery">
+  <div class="gallery-header reveal">
+    <div>
+      <div class="section-label">The Community in Motion</div>
+      <h2 class="section-title">THIS IS<br>THE CULTURE.</h2>
+    </div>
+    <p class="section-body" style="margin-bottom:0">Real skaters. Real moments. Real community. This is what The Skate Collective looks like.</p>
+  </div>
+  <div class="gallery-grid reveal">
+    <div class="gallery-item tall">
+      <img src="https://i.pinimg.com/736x/b3/0e/1f/b30e1f6d2e1e2f14a060d1e72efa61bd.jpg" alt="Roller skating community" onerror="this.parentElement.style.background='#d8d0c4'">
+      <div class="gallery-overlay"><div class="gallery-caption">Community · Barcelona</div></div>
+    </div>
+    <div class="gallery-item wide">
+      <img src="https://th.bing.com/th/id/R.f7cd98aa709011138a9e8c9ddf24ad8d?rik=7AM04FCosVM8zQ&pid=ImgRaw&r=0" alt="Skating event" onerror="this.parentElement.style.background='#e0d8cc'">
+      <div class="gallery-overlay"><div class="gallery-caption">Summer Jam · Chicago, IL</div></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://www.chicagoskates.com/cdn/shop/files/100.jpg?v=1705273811&width=1346" alt="Skater" onerror="this.parentElement.style.background='#c8c0b4'">
+      <div class="gallery-overlay"><div class="gallery-caption">Style · Dallas, TX</div></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://i.pinimg.com/736x/be/bc/9f/bebc9fc25ea731ed702114d71daf1c81.jpg" alt="Quad skates" onerror="this.parentElement.style.background='#d0c8bc'">
+      <div class="gallery-overlay"><div class="gallery-caption">Fresh kicks</div></div>
+    </div>
+    <div class="gallery-item wide">
+      <img src="https://media.thetriibe.com/wp-content/uploads/2025/04/14103355/Jacoby-Cochran-at-MLK-Rink-x-Ash-Lane-x-March-24-2025_36-2048x1365.jpg" alt="Skating rink" onerror="this.parentElement.style.background='#e8e0d4'">
+      <div class="gallery-overlay"><div class="gallery-caption">Friday Night Sessions · LA</div></div>
+    </div>
+    <div class="gallery-placeholder" onclick="window.location.href='submit-photo.html'" style="cursor:pointer;">
+      <div class="gallery-placeholder-icon">📸</div>
+      <div class="gallery-placeholder-text">Share your skating moment<br><strong>Submit a photo →</strong></div>
+    </div>
+  </div>
+  <div style="text-align:center" class="reveal">
+    <a href="submit-photo.html" class="btn-secondary">Share your skating →</a>
+  </div>
+</section>
+
+<!-- Events -->
+<section class="waitlist-section" id="waitlist">
+  <div class="section-label">Early Access</div>
+  <h2 class="section-title">JOIN THE<br>COLLECTIVE.</h2>
+  <div class="waitlist-tagline">— Built by skaters, for skaters —</div>
+  <p class="waitlist-sub">We're launching soon. Be the first to know — and be first to list your event when we go live.</p>
+  <div class="waitlist-tabs">
+    <button class="wtab active" onclick="setTab(this,'skater')">I'm a Skater</button>
+    <button class="wtab" onclick="setTab(this,'organizer')">I Run Events</button>
+  </div>
+
+  <!-- MailerLite signup form -->
+  <div style="position:relative; z-index:1; max-width:460px; margin:0 auto;">
+    <style type="text/css">
+      #mlb2-43791140.ml-form-embedContainer .ml-form-embedWrapper { background-color: transparent !important; }
+      #mlb2-43791140.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow input {
+        background-color: rgba(245,240,232,0.08) !important;
+        color: #f5f0e8 !important;
+        border-color: rgba(245,240,232,0.15) !important;
+        border-radius: 0 !important;
+        font-family: 'DM Sans', sans-serif !important;
+        font-size: 0.88rem !important;
+        padding: 15px 18px !important;
+      }
+      #mlb2-43791140.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow input::placeholder { color: rgba(245,240,232,0.3) !important; }
+      #mlb2-43791140.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedSubmit button {
+        background-color: #ff5c1a !important;
+        border-radius: 0 !important;
+        font-family: 'DM Sans', sans-serif !important;
+        font-size: 0.82rem !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.08em !important;
+        text-transform: uppercase !important;
+        padding: 15px 24px !important;
+      }
+      #mlb2-43791140.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedSubmit button:hover { background-color: #f5c842 !important; color: #111009 !important; }
+      #mlb2-43791140.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedContent h4 { color: #f5f0e8 !important; font-family: 'DM Sans', sans-serif !important; font-size: 0.95rem !important; font-weight: 400 !important; }
+      #mlb2-43791140.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedContent p { color: rgba(245,240,232,0.5) !important; font-family: 'DM Sans', sans-serif !important; }
+      #mlb2-43791140.ml-form-embedContainer .ml-form-embedWrapper .ml-form-successBody .ml-form-successContent h4 { color: #00a88a !important; font-family: 'DM Sans', sans-serif !important; }
+      #mlb2-43791140.ml-form-embedContainer .ml-form-embedWrapper .ml-form-successBody .ml-form-successContent p { color: rgba(245,240,232,0.6) !important; font-family: 'DM Sans', sans-serif !important; }
+      #mlb2-43791140.ml-form-embedContainer { margin: 0 auto !important; }
+    </style>
+    <div id="mlb2-43791140" class="ml-form-embedContainer ml-subscribe-form ml-subscribe-form-43791140">
+      <div class="ml-form-align-center">
+        <div class="ml-form-embedWrapper embedForm">
+          <div class="ml-form-embedBody ml-form-embedBodyDefault row-form">
+            <div class="ml-form-embedContent">
+              <h4>Stay in the loop</h4>
+              <p>Be first to know when new features drop. No spam, ever.</p>
+            </div>
+            <form class="ml-block-form" action="https://assets.mailerlite.com/jsonp/2512656/forms/193103085713754044/subscribe" data-code="" method="post" target="_blank">
+              <div class="ml-form-formContent">
+                <div class="ml-form-fieldRow ml-last-item">
+                  <div class="ml-field-group ml-field-email ml-validate-email ml-validate-required">
+                    <input aria-label="email" aria-required="true" type="email" class="form-control" data-inputmask="" name="fields[email]" placeholder="Enter your email address" autocomplete="email">
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" name="ml-submit" value="1">
+              <div class="ml-form-embedSubmit">
+                <button type="submit" class="primary">Join Now</button>
+                <button disabled="disabled" style="display:none;" type="button" class="loading">
+                  <div class="ml-form-embedSubmitLoad"></div>
+                  <span class="sr-only">Loading...</span>
+                </button>
+              </div>
+              <input type="hidden" name="anticsrf" value="true">
+            </form>
+          </div>
+          <div class="ml-form-successBody row-success" style="display:none">
+            <div class="ml-form-successContent">
+              <h4>🛼 You're in!</h4>
+              <p>Welcome to The Skate Collective. We'll be in touch soon.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function ml_webform_success_43791140() {
+        var $ = ml_jQuery || jQuery;
+        $('.ml-subscribe-form-43791140 .row-success').show();
+        $('.ml-subscribe-form-43791140 .row-form').hide();
+      }
+    </script>
+    <script src="https://groot.mailerlite.com/js/w/webforms.min.js?v83147fa8ce2d95cb73ece7f28b469519" type="text/javascript"></script>
+    <script>fetch("https://assets.mailerlite.com/jsonp/2512656/forms/193103085713754044/takel")</script>
+  </div>
+
+  <div class="waitlist-note">No spam. Just launch updates. Unsubscribe anytime.</div>
+</section>
+
+
+<!-- What's Coming -->
+<section id="roadmap" style="background:var(--black); padding:100px 48px;">
+  <div style="max-width:900px; margin:0 auto;">
+    <div class="reveal" style="text-align:center; margin-bottom:60px;">
+      <div class="section-label" style="color:var(--orange);">Roadmap</div>
+      <h2 class="section-title" style="color:var(--cream);">WHAT'S<br>COMING NEXT.</h2>
+      <p style="font-size:0.95rem; line-height:1.8; color:rgba(245,240,232,0.5); max-width:480px; margin:0 auto;">The Skate Collective is just getting started. Here's what we're building — and where you come in.</p>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:2px;" class="reveal">
+
+      <div style="background:#1a1a16; padding:32px; border-left:3px solid var(--teal);">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+          <div style="width:8px; height:8px; border-radius:50%; background:var(--teal); animation:pulse 2s infinite; flex-shrink:0;"></div>
+          <div style="font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--teal);">Live now</div>
+        </div>
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.6rem; color:var(--cream); margin-bottom:16px;">Phase 1</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; gap:10px; font-size:0.85rem; color:rgba(245,240,232,0.7); align-items:flex-start;">
+            <span style="color:var(--teal); flex-shrink:0;">✓</span> Worldwide event listings — free forever
+          </div>
+          <div style="display:flex; gap:10px; font-size:0.85rem; color:rgba(245,240,232,0.7); align-items:flex-start;">
+            <span style="color:var(--teal); flex-shrink:0;">✓</span> Community photo & video gallery
+          </div>
+          <div style="display:flex; gap:10px; font-size:0.85rem; color:rgba(245,240,232,0.7); align-items:flex-start;">
+            <span style="color:var(--teal); flex-shrink:0;">✓</span> Photographer & videographer submissions
+          </div>
+          <div style="display:flex; gap:10px; font-size:0.85rem; color:rgba(245,240,232,0.7); align-items:flex-start;">
+            <span style="color:var(--teal); flex-shrink:0;">✓</span> Submit & discover events from 40+ countries
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#1a1a16; padding:32px; border-left:3px solid var(--orange);">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+          <div style="width:8px; height:8px; border-radius:50%; background:var(--orange); flex-shrink:0;"></div>
+          <div style="font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange);">Coming soon</div>
+        </div>
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.6rem; color:var(--cream); margin-bottom:16px;">Phase 2</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; gap:10px; font-size:0.85rem; color:rgba(245,240,232,0.5); align-items:flex-start;">
+            <span style="color:var(--orange); flex-shrink:0;">→</span> Trainer profiles & content subscriptions
+          </div>
+          <div style="display:flex; gap:10px; font-size:0.85rem; color:rgba(245,240,232,0.5); align-items:flex-start;">
+            <span style="color:var(--orange); flex-shrink:0;">→</span> Live sessions & group classes
+          </div>
+          <div style="display:flex; gap:10px; font-size:0.85rem; color:rgba(245,240,232,0.5); align-items:flex-start;">
+            <span style="color:var(--orange); flex-shrink:0;">→</span> 1-on-1 coaching bookings
+          </div>
+          <div style="display:flex; gap:10px; font-size:0.85rem; color:rgba(245,240,232,0.5); align-items:flex-start;">
+            <span style="color:var(--orange); flex-shrink:0;">→</span> Skater profiles & community feed
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#1a1a16; padding:32px; border-left:3px solid var(--yellow);">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+          <div style="width:8px; height:8px; border-radius:50%; background:var(--yellow); flex-shrink:0;"></div>
+          <div style="font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--yellow);">On the horizon</div>
+        </div>
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.6rem; color:var(--cream); margin-bottom:16px;">Phase 3</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; gap:10px; font-size:0.85rem; color:rgba(245,240,232,0.5); align-items:flex-start;">
+            <span style="color:var(--yellow); flex-shrink:0;">→</span> Full community feed & clips sharing
+          </div>
+          <div style="display:flex; gap:10px; font-size:0.85rem; color:rgba(245,240,232,0.5); align-items:flex-start;">
+            <span style="color:var(--yellow); flex-shrink:0;">→</span> Interactive events map — worldwide
+          </div>
+          <div style="display:flex; gap:10px; font-size:0.85rem; color:rgba(245,240,232,0.5); align-items:flex-start;">
+            <span style="color:var(--yellow); flex-shrink:0;">→</span> Gear marketplace
+          </div>
+          <div style="display:flex; gap:10px; font-size:0.85rem; color:rgba(245,240,232,0.5); align-items:flex-start;">
+            <span style="color:var(--yellow); flex-shrink:0;">→</span> iOS & Android mobile app
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,92,26,0.06); border:1px dashed rgba(255,92,26,0.2); padding:32px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+        <div style="font-size:2rem; margin-bottom:14px;">🛼</div>
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--cream); margin-bottom:10px;">Stay in the loop</div>
+        <div style="font-size:0.82rem; color:rgba(245,240,232,0.45); line-height:1.6; margin-bottom:20px;">Sign up below and be the first to know when each phase drops. Early members get exclusive perks.</div>
+        <a href="#waitlist" style="background:var(--orange); color:var(--white); padding:10px 24px; font-size:0.82rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; transition:background 0.2s;" onmouseover="this.style.background='#f5c842'; this.style.color='#111009'" onmouseout="this.style.background='#ff5c1a'; this.style.color='#ffffff'">Join the waitlist →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Founder -->
+<section style="background:var(--cream-dark); padding:80px 48px;">
+  <div style="max-width:900px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center;">
+    <div class="reveal">
+      <div class="section-label">Our Founder</div>
+      <h2 class="section-title">BUILT FROM<br>THE CULTURE.</h2>
+      <p style="font-size:0.95rem; line-height:1.8; color:var(--muted); margin-bottom:16px;">The Skate Collective was founded by <strong style="color:var(--black)">Nicole Randall</strong> — skater, veteran, community builder, and entrepreneur based in Dallas, TX.</p>
+      <p style="font-size:0.95rem; line-height:1.8; color:var(--muted); margin-bottom:16px;">Nicole served <strong style="color:var(--black)">20 years in the United States Air Force</strong> — bringing the same discipline, dedication, and service mindset to everything she builds. She's been on skates since she was a little girl, and that love never left her.</p>
+      <p style="font-size:0.95rem; line-height:1.8; color:var(--muted); margin-bottom:16px;">She created The Skate Collective because she saw a gap — no single place existed where skaters worldwide could find events, connect, and celebrate the culture together.</p>
+      <p style="font-size:0.95rem; line-height:1.8; color:var(--muted);">This is her answer to that gap. Built by a skater, for skaters — everywhere.</p>
+    </div>
+    <div class="reveal" style="display:flex; flex-direction:column; gap:16px;">
+      <div style="background:var(--white); border:1px solid var(--border); padding:24px; border-left:3px solid var(--orange);">
+        <div style="font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--orange); margin-bottom:10px;">The vision</div>
+        <div style="font-size:0.95rem; line-height:1.7; color:var(--muted); font-style:italic;">"I wanted one place where any skater — from Atlanta to Paris to São Paulo — could find their people, find their next event, and feel like they belong. That's The Skate Collective."</div>
+        <div style="font-size:0.82rem; color:var(--black); font-weight:500; margin-top:12px;">— Nicole Randall, Founder</div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px;">
+        <div style="background:var(--white); padding:20px; text-align:center; border:1px solid var(--border);">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--orange);">20</div>
+          <div style="font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted);">Years USAF</div>
+        </div>
+        <div style="background:var(--white); padding:20px; text-align:center; border:1px solid var(--border);">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--orange);">40+</div>
+          <div style="font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted);">Countries</div>
+        </div>
+        <div style="background:var(--white); padding:20px; text-align:center; border:1px solid var(--border);">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--orange);">🛼</div>
+          <div style="font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted);">Since Day 1</div>
+        </div>
+      </div>
+      <div style="background:var(--black); padding:20px; display:flex; align-items:center; gap:14px;">
+        <div style="font-size:2rem; flex-shrink:0;">🇺🇸</div>
+        <div style="font-size:0.82rem; color:rgba(245,240,232,0.6); line-height:1.6;">United States Air Force Veteran · 20 Years of Service · Now building something for the culture.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- Footer -->
+<footer>
+  <div>
+    <div class="footer-logo">The Skate <span>Collective</span></div>
+    <div class="footer-tagline">Every skater. Every city. One place.</div>
+  </div>
+  <div style="text-align:right"><div class="footer-copy">© 2026 The Skate Collective. All rights reserved.</div><div style="font-size:0.7rem; color:rgba(245,240,232,0.2); margin-top:4px; letter-spacing:0.08em;">Founded by Nicole Randall · USAF Veteran · Dallas, TX</div></div>
+</footer>
+
+<script>
+  // Like toggle
+  function toggleLike(el, count) {
+    const liked = el.classList.toggle('liked');
+    const countEl = el.querySelector('.like-count');
+    countEl.textContent = liked ? count + 1 : count;
+    el.querySelector('.like-icon').textContent = liked ? '❤️' : '🤍';
+  }
+
+  // Back to top
+  const backToTop = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    backToTop.classList.toggle('visible', window.scrollY > 400);
+  });
+
+  const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
+
+  // ════════════════════════════════════════════════════════════════════
+  //  APPROVED EVENTS  —  this is your live events list.
+  //  TO APPROVE AN EVENT: open the submission email, copy the ready-made
+  //  line it gives you ("add_to_site_paste_this"), and paste it right below
+  //  the marked line. Save the file and redeploy. That's it.
+  //  TO REMOVE AN EVENT: delete its line.
+  // ════════════════════════════════════════════════════════════════════
+  const EVENTS = [
+    { day: "14", month: "June 2026", name: "Chicago Roller Jam Classic", loc: "Chicago, IL · USA", types: ["Competition","All styles"], free: false },
+    { day: "22", month: "June 2026", name: "Skate Paris Summer Festival", loc: "Paris · France", types: ["Festival"], free: true },
+    { day: "05", month: "July 2026", name: "ATL Rhythm Skating Boot Camp", loc: "Atlanta, GA · USA", types: ["Boot Camp","Beginner friendly"], free: false },
+    { day: "19", month: "July 2026", name: "London Derby Invitational", loc: "London · UK", types: ["Competition","Roller Derby"], free: false },
+    { day: "02", month: "Aug 2026", name: "São Paulo Skate Fest", loc: "São Paulo · Brazil", types: ["Festival"], free: true },
+
+    // ⬇️  PASTE NEWLY APPROVED EVENTS BELOW THIS LINE (one per line, from your email)  ⬇️
+
+
+  ];
+
+  (function renderEvents() {
+    const grid = document.getElementById('events-grid');
+    if (!grid) return;
+    const addCard = grid.querySelector('.events-add');
+    EVENTS.forEach(function(ev) {
+      const tags = (ev.types || []).map(function(t) {
+        const cls = /competition/i.test(t) ? 'etag etag-comp' : 'etag';
+        return '<span class="' + cls + '">' + t + '</span>';
+      }).join('');
+      const freeTag = ev.free ? '<span class="etag etag-free">Free entry</span>' : '';
+      const html =
+        '<div class="event-card">' +
+          '<div class="event-date-num">' + (ev.day || '') + '</div>' +
+          '<div class="event-date-mo">' + (ev.month || '') + '</div>' +
+          '<div class="event-name">' + (ev.name || '') + '</div>' +
+          '<div class="event-loc">📍 ' + (ev.loc || '') + '</div>' +
+          '<div class="event-tags">' + freeTag + tags + '</div>' +
+        '</div>';
+      addCard.insertAdjacentHTML('beforebegin', html);
+    });
+  })();
+
+  let currentTab = 'skater';
+  function setTab(btn, tab) {
+    currentTab = tab;
+    document.querySelectorAll('.wtab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const ph = { skater: 'Enter your email address', trainer: 'Enter your trainer email', organizer: 'Enter your organizer email' };
+    document.getElementById('emailInput').placeholder = ph[tab];
+  }
+
+  async function handleSignup() {
+    const email = document.getElementById('emailInput').value;
+    if (!email || !email.includes('@')) {
+      document.getElementById('emailInput').style.borderColor = 'rgba(255,92,26,0.6)';
+      return;
+    }
+    document.getElementById('emailInput').style.borderColor = '';
+    try {
+      const existing = await window.storage.get('signups').catch(() => null);
+      const list = existing ? JSON.parse(existing.value) : [];
+      list.push({ email, type: currentTab, date: new Date().toISOString() });
+      await window.storage.set('signups', JSON.stringify(list));
+    } catch(e) {}
+    document.querySelector('.waitlist-form').style.display = 'none';
+    document.getElementById('successMsg').classList.add('show');
+  }
+</script>
+</body>
+</html>
