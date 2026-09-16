@@ -440,7 +440,7 @@
       if (!data.success) throw new Error(data.error || 'submit failed');
     } catch (err) {
       if (btn) { btn.disabled = false; btn.textContent = 'Submit event →'; }
-      showToast('Something went wrong sending your event. Please try again.', true);
+      alert('Error detail: ' + String(err && err.message ? err.message : err));
       return;
     }
 
