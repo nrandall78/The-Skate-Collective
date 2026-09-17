@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Events — The Skate Collective</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f0e8; --cream-dark: #ede5d8; --black: #111009;
+    --orange: #ff5c1a; --yellow: #f5c842; --teal: #00a88a;
+    --white: #ffffff; --muted: rgba(17,16,9,0.5); --border: rgba(17,16,9,0.1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--cream); color: var(--black); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 48px; background: rgba(245,240,232,0.95); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.08em; color: var(--black); text-decoration: none; }
+  .logo span { color: var(--orange); }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-back { font-size: 0.82rem; color: var(--muted); text-decoration: none; letter-spacing: 0.06em; transition: color 0.2s; }
+  .nav-back:hover { color: var(--orange); }
+  .nav-cta { background: var(--orange); color: var(--white); text-decoration: none; padding: 10px 20px; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; transition: background 0.2s; }
+  .nav-cta:hover { background: var(--black); }
+
+  .head { max-width: 1100px; margin: 0 auto; padding: 56px 40px 10px; }
+  .head-eyebrow { font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .head-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--orange); }
+  .head h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.8rem, 7vw, 5rem); line-height: 0.9; letter-spacing: 0.02em; }
+  .head h1 span { color: var(--orange); }
+  .head p { color: var(--muted); margin-top: 12px; max-width: 520px; line-height: 1.7; }
+
+  /* Filters */
+  .filters { max-width: 1100px; margin: 0 auto; padding: 28px 40px 8px; }
+  .search-box { position: relative; margin-bottom: 16px; max-width: 460px; }
+  .search-box input { width: 100%; background: var(--white); border: 1px solid var(--border); color: var(--black); padding: 14px 16px 14px 42px; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 300; outline: none; transition: border-color 0.2s; }
+  .search-box input:focus { border-color: rgba(255,92,26,0.5); }
+  .search-box input::placeholder { color: rgba(17,16,9,0.35); }
+  .search-box .icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 1rem; opacity: 0.5; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-family: 'DM Sans', sans-serif; font-size: 0.8rem; color: var(--muted); background: var(--white); border: 1px solid var(--border); padding: 9px 16px; cursor: pointer; transition: all 0.15s; user-select: none; -webkit-tap-highlight-color: transparent; }
+  .chip:hover { border-color: rgba(255,92,26,0.4); color: var(--black); }
+  .chip.active { background: var(--orange); border-color: var(--orange); color: var(--white); font-weight: 400; }
+  .chip.all.active { background: var(--black); border-color: var(--black); }
+
+  .count { max-width: 1100px; margin: 0 auto; padding: 20px 40px 0; font-size: 0.82rem; color: var(--muted); letter-spacing: 0.04em; }
+
+  /* Events on a dark panel so cards match the homepage exactly */
+  .events-panel { background: var(--black); margin-top: 16px; padding: 30px 0 70px; }
+  .events-grid { max-width: 1100px; margin: 0 auto; padding: 0 40px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .event-card { background: #1a1a16; padding: 28px; border-bottom: 2px solid transparent; transition: all 0.3s; }
+  .event-card:hover { background: #222219; border-bottom-color: var(--orange); }
+  .event-date-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; color: var(--yellow); line-height: 1; }
+  .event-date-mo { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--orange); margin-bottom: 14px; }
+  .event-name { font-size: 0.92rem; font-weight: 500; margin-bottom: 6px; color: var(--cream); line-height: 1.4; }
+  .event-loc { font-size: 0.78rem; color: rgba(245,240,232,0.45); margin-bottom: 12px; }
+  .event-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .etag { font-size: 0.62rem; padding: 3px 9px; border: 1px solid rgba(245,240,232,0.15); color: rgba(245,240,232,0.5); letter-spacing: 0.08em; text-transform: uppercase; }
+  .etag-comp { border-color: rgba(255,92,26,0.4); color: var(--orange); }
+  .etag-free { border-color: rgba(245,200,66,0.3); color: var(--yellow); }
+  .empty { max-width: 1100px; margin: 0 auto; padding: 60px 40px; text-align: center; color: rgba(245,240,232,0.5); font-size: 0.95rem; line-height: 1.7; }
+  .empty a { color: var(--orange); text-decoration: none; }
+
+  footer { background: var(--black); color: rgba(245,240,232,0.5); text-align: center; padding: 30px 40px 46px; font-size: 0.82rem; border-top: 1px solid rgba(245,240,232,0.08); }
+  footer .tag { font-family: 'Bebas Neue', sans-serif; color: var(--orange); letter-spacing: 0.06em; }
+
+  @media (max-width: 900px) { .events-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) {
+    nav { padding: 18px 22px; }
+    .nav-links { gap: 14px; }
+    .head, .filters, .count { padding-left: 22px; padding-right: 22px; }
+    .events-grid { grid-template-columns: 1fr; padding: 0 22px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">The Skate <span>Collective</span></a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-back">← Home</a>
+    <a href="submit-event.html" class="nav-cta">Add Event</a>
+  </div>
+</nav>
+
+<div class="head">
+  <div class="head-eyebrow">Worldwide events</div>
+  <h1>EVERY <span>JAM</span>,<br>WORLDWIDE.</h1>
+  <p>Every upcoming skating event in one place. Search your city, filter by what you're into, and find your next roll.</p>
+</div>
+
+<div class="filters">
+  <div class="search-box">
+    <span class="icon">🔍</span>
+    <input type="text" id="search" placeholder="Search city or country — e.g. London, Spain, Dallas" oninput="applyFilters()">
+  </div>
+  <div class="chips" id="chips"></div>
+</div>
+
+<div class="count" id="count"></div>
+
+<div class="events-panel">
+  <div class="events-grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none"></div>
+</div>
+
+<footer>
+  <div style="margin-bottom:8px;"><a href="index.html" class="logo" style="font-size:1.3rem;">The Skate <span>Collective</span></a></div>
+  <span class="tag">Rise &amp; Roll</span>
+</footer>
+
+<script>
+  const TYPES = ["Competition", "Jam / Skate Night", "Boot Camp", "Festival", "Meetup", "Workshop"];
+  let allEvents = [];
+  let selected = new Set();
+
+  const chipsEl = document.getElementById('chips');
+  const gridEl = document.getElementById('grid');
+  const emptyEl = document.getElementById('empty');
+  const countEl = document.getElementById('count');
+  const searchEl = document.getElementById('search');
+
+  // Build filter chips
+  function makeChip(label, isAll) {
+    const b = document.createElement('button');
+    b.className = 'chip' + (isAll ? ' all active' : '');
+    b.textContent = label;
+    b.onclick = function () {
+      if (isAll) { selected.clear(); }
+      else { if (selected.has(label)) selected.delete(label); else selected.add(label); }
+      applyFilters();
+    };
+    b.dataset.label = label;
+    return b;
+  }
+  const allChip = makeChip('All', true);
+  chipsEl.appendChild(allChip);
+  TYPES.forEach(function (t) { chipsEl.appendChild(makeChip(t, false)); });
+
+  function eventCardHTML(ev) {
+    const tags = (ev.types || []).map(function (t) {
+      const cls = /competition/i.test(t) ? 'etag etag-comp' : 'etag';
+      return '<span class="' + cls + '">' + t + '</span>';
+    }).join('');
+    const freeTag = ev.free ? '<span class="etag etag-free">Free entry</span>' : '';
+    return '<div class="event-card">' +
+        '<div class="event-date-num">' + (ev.day || '') + '</div>' +
+        '<div class="event-date-mo">' + (ev.month || '') + '</div>' +
+        '<div class="event-name">' + (ev.name || '') + '</div>' +
+        '<div class="event-loc">📍 ' + (ev.loc || '') + '</div>' +
+        '<div class="event-tags">' + freeTag + tags + '</div>' +
+      '</div>';
+  }
+
+  function applyFilters() {
+    // sync chip active states
+    allChip.classList.toggle('active', selected.size === 0);
+    chipsEl.querySelectorAll('.chip:not(.all)').forEach(function (c) {
+      c.classList.toggle('active', selected.has(c.dataset.label));
+    });
+
+    const q = searchEl.value.trim().toLowerCase();
+    const list = allEvents.filter(function (ev) {
+      const matchLoc = !q || (ev.loc || '').toLowerCase().indexOf(q) !== -1 || (ev.name || '').toLowerCase().indexOf(q) !== -1;
+      const matchType = selected.size === 0 || (ev.types || []).some(function (t) { return selected.has(t); });
+      return matchLoc && matchType;
+    });
+
+    countEl.textContent = list.length + (list.length === 1 ? ' event' : ' events')
+      + (allEvents.length ? ' of ' + allEvents.length : '');
+
+    if (!list.length) {
+      gridEl.innerHTML = '';
+      emptyEl.style.display = 'block';
+      emptyEl.innerHTML = allEvents.length
+        ? "No events match that search. Try a different city or clear the filters."
+        : "No upcoming events listed yet. <a href='submit-event.html'>Be the first to add one →</a>";
+      return;
+    }
+    emptyEl.style.display = 'none';
+    gridEl.innerHTML = list.map(eventCardHTML).join('');
+  }
+
+  fetch('/.netlify/functions/get-events')
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+    .then(function (list) { allEvents = Array.isArray(list) ? list : []; applyFilters(); })
+    .catch(function () { allEvents = []; applyFilters(); });
+</script>
+</body>
+</html>
