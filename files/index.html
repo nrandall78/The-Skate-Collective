@@ -353,8 +353,8 @@
       <div class="events-add-text">Hosting an event?<br>List it free on The Skate Collective.<br><br><a href='submit-event.html' style="color:var(--orange); text-decoration:none; font-weight:500">Add your event →</a></div>
     </div>
   </div>
-  <div style="text-align:center; display:none" class="reveal">
-    <a href="#waitlist" class="btn-primary">See all events →</a>
+  <div style="text-align:center" class="reveal">
+    <a href="events.html" class="btn-primary">See all events →</a>
   </div>
 </section>
 
@@ -462,13 +462,13 @@
       <img src="https://media.thetriibe.com/wp-content/uploads/2025/04/14103355/Jacoby-Cochran-at-MLK-Rink-x-Ash-Lane-x-March-24-2025_36-2048x1365.jpg" alt="Skating rink" onerror="this.parentElement.style.background='#e8e0d4'">
       <div class="gallery-overlay"><div class="gallery-caption">Friday Night Sessions · LA</div></div>
     </div>
-    <div class="gallery-placeholder" onclick="window.location.href='submit-photo.html'" style="cursor:pointer;">
+    <div class="gallery-placeholder">
       <div class="gallery-placeholder-icon">📸</div>
-      <div class="gallery-placeholder-text">Share your skating moment<br><strong>Submit a photo →</strong></div>
+      <div class="gallery-placeholder-text">Your shot here soon<br><strong>Gallery coming soon</strong></div>
     </div>
   </div>
   <div style="text-align:center" class="reveal">
-    <a href="submit-photo.html" class="btn-secondary">Share your skating →</a>
+    <p style="font-size:0.9rem; color:var(--muted); max-width:540px; margin:0 auto; line-height:1.7;">📸 <strong style="color:var(--black);">Community Gallery — coming soon.</strong> Soon you'll be able to share your best skating photos and clips and get featured here, seen by skaters worldwide. <a href="#waitlist" style="color:var(--orange); text-decoration:none;">Get on the list</a> to know the moment it drops.</p>
   </div>
 </section>
 
@@ -763,10 +763,10 @@
     fetch('/.netlify/functions/get-events')
       .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
       .then(function (list) {
-        if (Array.isArray(list) && list.length) renderEventList(list);
-        else renderEventList(EVENTS); // Airtable empty → show fallback
+        if (Array.isArray(list) && list.length) renderEventList(list.slice(0, 6));
+        else renderEventList(EVENTS.slice(0, 6)); // Airtable empty → show fallback
       })
-      .catch(function () { renderEventList(EVENTS); }); // couldn't reach Airtable → fallback
+      .catch(function () { renderEventList(EVENTS.slice(0, 6)); }); // couldn't reach Airtable → fallback
   })();
 
   let currentTab = 'skater';
