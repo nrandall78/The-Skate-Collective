@@ -11,8 +11,11 @@ exports.handler = async () => {
     return { statusCode: 500, body: JSON.stringify({ error: 'Missing AIRTABLE_TOKEN' }) };
   }
   try {
+    // Only APPROVED events whose date is today or later (past events drop off).
+    // Events with no date set are still shown.
+    const formula = "AND({Approved}=TRUE(), OR({Date}=BLANK(), IS_AFTER({Date}, DATEADD(TODAY(),-1,'days'))))";
     const url = 'https://api.airtable.com/v0/' + BASE_ID + '/' + encodeURIComponent(TABLE)
-      + '?filterByFormula=' + encodeURIComponent('{Approved}=TRUE()')
+      + '?filterByFormula=' + encodeURIComponent(formula)
       + '&sort%5B0%5D%5Bfield%5D=Date&sort%5B0%5D%5Bdirection%5D=asc';
 
     const res = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
