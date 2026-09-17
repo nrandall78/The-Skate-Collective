@@ -147,9 +147,9 @@
       <div class="field">
         <label>I am a... *</label>
         <div class="photo-type-grid">
-          <div class="photo-type-opt" onclick="selectPhotoType(this, 'Skater')"><span class="photo-type-icon">🛼</span>Skater</div>
-          <div class="photo-type-opt" onclick="selectPhotoType(this, 'Photographer')"><span class="photo-type-icon">📸</span>Photographer</div>
-          <div class="photo-type-opt" onclick="selectPhotoType(this, 'Videographer')"><span class="photo-type-icon">🎥</span>Videographer</div>
+          <div class="photo-type-opt" onclick="selectRole(this, 'Skater')"><span class="photo-type-icon">🛼</span>Skater</div>
+          <div class="photo-type-opt" onclick="selectRole(this, 'Photographer')"><span class="photo-type-icon">📸</span>Photographer</div>
+          <div class="photo-type-opt" onclick="selectRole(this, 'Videographer')"><span class="photo-type-icon">🎥</span>Videographer</div>
         </div>
       </div>
       <div class="field-row">
@@ -204,14 +204,14 @@
       <div class="field">
         <label>What are you submitting? *</label>
         <div class="photo-type-grid">
-          <div class="photo-type-opt" onclick="selectPhotoType(this, 'Photo')">
+          <div class="photo-type-opt" onclick="selectType(this, 'Photo')">
             <span class="photo-type-icon">📸</span>Photo
           </div>
-          <div class="photo-type-opt" onclick="selectPhotoType(this, 'Video clip')">
+          <div class="photo-type-opt" onclick="selectType(this, 'Video clip')">
             <span class="photo-type-icon">🎥</span>Video clip
             <div style="font-size:0.6rem; color:var(--orange); margin-top:4px; letter-spacing:0.06em;">LINK ONLY</div>
           </div>
-          <div class="photo-type-opt" onclick="selectPhotoType(this, 'Both')">
+          <div class="photo-type-opt" onclick="selectType(this, 'Both')">
             <span class="photo-type-icon">✨</span>Both
           </div>
         </div>
@@ -267,7 +267,7 @@
       <div class="step-label">Step 3 of 3 — Final step</div>
       <div class="field">
         <label>How did you hear about The Skate Collective?</label>
-        <select>
+        <select id="heard-about">
           <option>Instagram</option>
           <option>TikTok</option>
           <option>A friend</option>
@@ -278,14 +278,14 @@
       </div>
       <div class="field">
         <label>Anything else you want to say?</label>
-        <textarea placeholder="Shoutouts, questions, anything at all..."></textarea>
+        <textarea id="extra-notes" placeholder="Shoutouts, questions, anything at all..."></textarea>
       </div>
       <div class="field">
         <label>Permissions *</label>
-        <div class="consent-box" onclick="toggleConsent()">
+        <label class="consent-box">
           <input type="checkbox" id="consent">
           <div class="consent-text">I confirm this photo/video is mine or I have permission to share it. I give <strong>The Skate Collective</strong> permission to feature it in the gallery and share it on social media with credit to me.</div>
-        </div>
+        </label>
       </div>
       <div style="background:rgba(255,92,26,0.04); border:1px solid rgba(255,92,26,0.15); padding:16px; font-size:0.82rem; color:var(--muted); line-height:1.7; margin-top:8px;">
         🛼 We review every submission and feature the best ones in the gallery. You'll get an email if yours is selected. We always credit the skater — your name and Instagram will be shown with your photo.
@@ -359,7 +359,8 @@
 </div>
 
 <script>
-  let selectedPhotoType = '';
+  let selectedRole = '';
+  let selectedType = '';
 
   function goStep(n) {
     [1,2,3].forEach(i => {
@@ -369,15 +370,18 @@
     });
   }
 
-  function selectPhotoType(el, type) {
-    selectedPhotoType = type;
-    document.querySelectorAll('.photo-type-opt').forEach(o => o.classList.remove('selected'));
+  // Step 1 "I am a..." — only clears selection within its own grid
+  function selectRole(el, val) {
+    selectedRole = val;
+    el.closest('.photo-type-grid').querySelectorAll('.photo-type-opt').forEach(o => o.classList.remove('selected'));
     el.classList.add('selected');
   }
 
-  function toggleConsent() {
-    const cb = document.getElementById('consent');
-    cb.checked = !cb.checked;
+  // Step 2 "What are you submitting?" — only clears selection within its own grid
+  function selectType(el, val) {
+    selectedType = val;
+    el.closest('.photo-type-grid').querySelectorAll('.photo-type-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
   }
 
   async function submitPhoto() {
@@ -389,33 +393,48 @@
     if (!name) { alert('Please add your name'); goStep(1); return; }
     if (!email || !email.includes('@')) { alert('Please add a valid email'); goStep(1); return; }
     if (!link) { alert('Please add a link to your photo or video'); goStep(2); return; }
-    if (!consent) { 
+    if (!consent) {
       document.querySelector('.consent-box').style.borderColor = 'rgba(255,92,26,0.5)';
-      alert('Please confirm you have permission to share this content'); 
-      return; 
+      alert('Please confirm you have permission to share this content');
+      return;
     }
 
-    const submission = {
-      name,
-      email,
+    const payload = {
+      access_key: '99e7a699-bec0-490a-8b76-e37921a9cb6f',
+      subject: 'New gallery submission — ' + name,
+      from_name: 'The Skate Collective',
+      submitter_role: selectedRole,
+      content_type: selectedType,
+      name: name,
+      email: email,
       instagram: document.getElementById('instagram').value,
       city: document.getElementById('skater-city').value,
       country: document.getElementById('skater-country').value,
       style: document.getElementById('skater-style').value,
-      type: selectedPhotoType,
-      link,
+      media_link: link,
       location: document.getElementById('photo-location').value,
       caption: document.getElementById('photo-caption').value,
-      others: document.getElementById('photo-others').value,
+      others_tagged: document.getElementById('photo-others').value,
+      heard_about: document.getElementById('heard-about').value,
+      extra_notes: document.getElementById('extra-notes').value,
       submitted: new Date().toISOString()
     };
 
+    const btn = document.querySelector('#step3 .btn-next');
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
     try {
-      const existing = await window.storage.get('photo-submissions').catch(() => null);
-      const list = existing ? JSON.parse(existing.value) : [];
-      list.push(submission);
-      await window.storage.set('photo-submissions', JSON.stringify(list));
-    } catch(e) {}
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error('failed');
+    } catch (e) {
+      if (btn) { btn.disabled = false; btn.textContent = 'Submit →'; }
+      alert('Something went wrong sending your submission. Please try again.');
+      return;
+    }
 
     [1,2,3].forEach(i => document.getElementById('step'+i).classList.remove('active'));
     document.getElementById('step-done').classList.add('active');
@@ -426,7 +445,8 @@
     document.querySelectorAll('input, textarea').forEach(el => el.value = '');
     document.querySelectorAll('.photo-type-opt').forEach(o => o.classList.remove('selected'));
     document.getElementById('consent').checked = false;
-    selectedPhotoType = '';
+    selectedRole = '';
+    selectedType = '';
     document.getElementById('step-done').classList.remove('active');
     goStep(1);
   }
